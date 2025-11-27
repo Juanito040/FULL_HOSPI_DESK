@@ -1,0 +1,186 @@
+@if (isOpen && equipo) {
+  <div class="modal-overlay" (click)="close()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="header-content">
+          <h2>{{ equipo.nombre_equipo }}</h2>
+          <span [class]="getEstadoBadgeClass(equipo.activo)">
+            {{ formatEstado(equipo.activo) }}
+          </span>
+        </div>
+        <button class="btn-close" (click)="close()" type="button">✕</button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <!-- Información Básica -->
+        <div class="detail-section">
+          <h3 class="section-title">Información Básica</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">ID</span>
+              <span class="detail-value">{{ equipo.id_sysequipo }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Marca</span>
+              <span class="detail-value">{{ formatValue(equipo.marca) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Modelo</span>
+              <span class="detail-value">{{ formatValue(equipo.modelo) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Número de Serie</span>
+              <span class="detail-value">
+                <code class="serie-badge">{{ formatValue(equipo.serie) }}</code>
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Placa de Inventario</span>
+              <span class="detail-value">{{ formatValue(equipo.placa_inventario) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Código</span>
+              <span class="detail-value">{{ formatValue(equipo.codigo) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Ubicación</span>
+              <span class="detail-value">📍 {{ formatValue(equipo.ubicacion) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Ubicación Específica</span>
+              <span class="detail-value">{{ formatValue(equipo.ubicacion_especifica) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Año de Ingreso</span>
+              <span class="detail-value">{{ equipo.ano_ingreso || 'No especificado' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mantenimiento -->
+        <div class="detail-section">
+          <h3 class="section-title">Información de Mantenimiento</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Requiere Mantenimiento</span>
+              <span class="detail-value">{{ equipo.mtto === 1 ? 'Sí' : 'No' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Días de Mantenimiento</span>
+              <span class="detail-value">{{ equipo.dias_mantenimiento || 'No especificado' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Periodicidad (días)</span>
+              <span class="detail-value">{{ equipo.periodicidad || 'No especificado' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuración de Red -->
+        <div class="detail-section">
+          <h3 class="section-title">Configuración de Red</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Administrable</span>
+              <span class="detail-value">{{ equipo.administrable === 1 ? 'Sí' : 'No' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Número de Puertos</span>
+              <span class="detail-value">{{ equipo.numero_puertos || 'No especificado' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Direccionamiento VLAN</span>
+              <span class="detail-value">
+                @if (equipo.direccionamiento_Vlan) {
+                  <code class="ip-badge">{{ equipo.direccionamiento_Vlan }}</code>
+                } @else {
+                  <span>No especificado</span>
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historial de Mantenimientos -->
+        <div class="detail-section historial-section">
+          <div class="section-header-with-toggle">
+            <h3 class="section-title">Historial de Mantenimientos</h3>
+            <button class="btn-toggle" (click)="toggleHistorial()" type="button">
+              {{ showHistorial ? '▼' : '▶' }}
+            </button>
+          </div>
+
+          @if (showHistorial) {
+            @if (isLoadingMantenimientos) {
+              <div class="loading-historial">
+                <span class="spinner">⏳</span>
+                <span>Cargando historial...</span>
+              </div>
+            } @else if (mantenimientos.length > 0) {
+              <div class="historial-list">
+                @for (mant of mantenimientos; track mant.id_sysmtto) {
+                  <div class="historial-item">
+                    <div class="historial-header">
+                      <div class="historial-title">
+                        <strong>{{ mant.numero_reporte || 'Sin número' }}</strong>
+                        <span [class]="getTipoMantenimientoBadgeClass(mant.tipo_mantenimiento)">
+                          {{ mant.tipo_mantenimiento || 'N/A' }}
+                        </span>
+                        <span [class]="getEstadoMantenimientoBadgeClass(mant.estado)">
+                          {{ formatEstadoMantenimiento(mant.estado) }}
+                        </span>
+                      </div>
+                      <span class="historial-date">{{ formatDate(mant.fecha) }}</span>
+                    </div>
+                    @if (mant.tipo_falla) {
+                      <div class="historial-detail">
+                        <strong>Falla:</strong> {{ mant.tipo_falla }}
+                      </div>
+                    }
+                    @if (mant.descripcion_falla) {
+                      <div class="historial-detail">
+                        <strong>Descripción:</strong> {{ mant.descripcion_falla }}
+                      </div>
+                    }
+                    @if (mant.observaciones) {
+                      <div class="historial-detail">
+                        <strong>Observaciones:</strong> {{ mant.observaciones }}
+                      </div>
+                    }
+                    @if (mant.nombre_tecnico) {
+                      <div class="historial-detail">
+                        <strong>Técnico:</strong> 👤 {{ mant.nombre_tecnico }}
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-historial">
+                <span class="empty-icon">📋</span>
+                <p>No hay mantenimientos registrados para este equipo</p>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer no-print">
+        <button class="btn btn-secondary" (click)="close()" type="button">
+          Cerrar
+        </button>
+        <button class="btn btn-secondary" (click)="printToPDF()" type="button">
+          <span>🖨️</span>
+          <span>Imprimir / PDF</span>
+        </button>
+        <button class="btn btn-primary" (click)="requestEdit()" type="button">
+          <span>✏️</span>
+          <span>Editar Equipo</span>
+        </button>
+      </div>
+    </div>
+  </div>
+}

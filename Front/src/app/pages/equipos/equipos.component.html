@@ -1,0 +1,136 @@
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Gestión de Equipos</h1>
+      <p class="subtitle">Administra todos los equipos de sistemas del hospital</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreateModal()">
+      <span>➕</span>
+      <span>Nuevo Equipo</span>
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Buscar por nombre, marca, modelo o ubicación..."
+        (input)="onSearch($event)"
+        [disabled]="isLoading"
+      />
+    </div>
+    <div class="filters">
+      <select class="filter-select" (change)="onEstadoChange($event)" [disabled]="isLoading">
+        <option value="">Todos los estados</option>
+        <option value="1">Activos</option>
+        <option value="0">Inactivos</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Mensaje de carga -->
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner">⏳</div>
+      <p>Cargando equipos...</p>
+    </div>
+  }
+
+  <!-- Mensaje de error -->
+  @if (error && !isLoading) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <p>{{ error }}</p>
+      <button class="btn btn-primary" (click)="loadEquipos()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Tabla de equipos -->
+  @if (!isLoading && !error) {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Serie</th>
+            <th>Ubicación</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (equipo of filteredEquipos; track equipo.id_sysequipo) {
+            <tr>
+              <td>{{ equipo.id_sysequipo }}</td>
+              <td><strong>{{ equipo.nombre_equipo }}</strong></td>
+              <td>{{ equipo.marca || 'N/A' }}</td>
+              <td>{{ equipo.modelo || 'N/A' }}</td>
+              <td><code class="serie-badge">{{ formatSerie(equipo.serie) }}</code></td>
+              <td>{{ equipo.ubicacion || 'N/A' }}</td>
+              <td>
+                <span [class]="getEstadoBadgeClass(equipo.activo)">
+                  {{ formatEstado(equipo.activo) }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" title="Ver detalles" (click)="openDetailModal(equipo)">👁️</button>
+                  <button class="btn-icon" title="Editar" (click)="openEditModal(equipo)">✏️</button>
+                  <button class="btn-icon" title="Eliminar" (click)="confirmDelete(equipo)">🗑️</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8" class="empty-state">
+                <div class="empty-icon">📦</div>
+                <p>No se encontraron equipos</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Paginación (placeholder) -->
+  <div class="pagination">
+    <button class="btn btn-secondary">Anterior</button>
+    <span class="page-info">Página 1 de 1</span>
+    <button class="btn btn-secondary">Siguiente</button>
+  </div>
+</div>
+
+<!-- Modal de Equipo (Crear/Editar) -->
+<app-equipo-modal
+  [isOpen]="isModalOpen"
+  [equipo]="selectedEquipo"
+  (closed)="closeModal()"
+  (saved)="onEquipoSaved()"
+></app-equipo-modal>
+
+<!-- Modal de Confirmación de Eliminación -->
+<app-confirm-dialog
+  [isOpen]="isConfirmDialogOpen"
+  [title]="'Eliminar Equipo'"
+  [message]="'¿Estás seguro de que deseas eliminar el equipo &quot;' + (equipoToDelete?.nombre_equipo || '') + '&quot;? Esta acción no se puede deshacer.'"
+  [confirmText]="'Eliminar'"
+  [cancelText]="'Cancelar'"
+  [type]="'danger'"
+  [icon]="'🗑️'"
+  (confirmed)="deleteEquipo()"
+  (cancelled)="closeConfirmDialog()">
+</app-confirm-dialog>
+
+<!-- Modal de Vista Detallada -->
+<app-equipo-detail-modal
+  [isOpen]="isDetailModalOpen"
+  [equipo]="equipoToView"
+  (closed)="closeDetailModal()"
+  (editRequested)="onEditFromDetail($event)"
+></app-equipo-detail-modal>

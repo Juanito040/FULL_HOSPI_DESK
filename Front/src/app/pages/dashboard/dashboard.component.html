@@ -1,0 +1,76 @@
+<div class="container">
+  <!-- Banner de Bienvenida -->
+  <div class="welcome-banner">
+    <div class="welcome-content">
+      <div class="welcome-text">
+        <div class="welcome-header">
+          <img src="img/logo-husrt-1024x320.png" alt="Hospital San Rafael" class="welcome-logo">
+          <div class="welcome-info">
+            <h1 class="welcome-greeting">{{ greeting }}, {{ userName }}</h1>
+            <p class="welcome-subtitle">Bienvenido al Sistema de Gestión - Hospital San Rafael</p>
+          </div>
+        </div>
+      </div>
+      <div class="welcome-datetime">
+        <div class="datetime-item">
+          <span class="datetime-icon"></span>
+          <span class="datetime-value">{{ currentTime }}</span>
+        </div>
+        <div class="datetime-item">
+          <span class="datetime-icon"></span>
+          <span class="datetime-value">{{ currentDate }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="welcome-decoration">
+      <div class="decoration-circle circle-1"></div>
+      <div class="decoration-circle circle-2"></div>
+      <div class="decoration-circle circle-3"></div>
+    </div>
+  </div>
+
+  <!-- Actividad reciente y Accesos rápidos -->
+  <div class="dashboard-grid">
+    <!-- Actividad Reciente -->
+    <div class="card activity-card">
+      <div class="card-header">
+        <h2>
+          <span class="header-icon"></span>
+          Actividad Reciente
+        </h2>
+      </div>
+      <div class="activity-list">
+        @for (activity of recentActivity; track activity.description) {
+          <div class="activity-item">
+            <div class="activity-icon">{{ activity.icon }}</div>
+            <div class="activity-content">
+              <p class="activity-description">{{ activity.description }}</p>
+              <p class="activity-time">{{ activity.time }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Accesos Rápidos -->
+    <div class="card">
+      <div class="card-header">
+        <h2>
+          <span class="header-icon"></span>
+          Accesos Rápidos
+        </h2>
+      </div>
+      <div class="quick-actions-grid">
+        @for (access of quickAccess; track access.route) {
+          <a [routerLink]="access.route" class="quick-access-card" [style.border-left-color]="access.color">
+            <div class="access-icon" [style.background-color]="access.color + '20'">{{ access.icon }}</div>
+            <div class="access-content">
+              <h3 class="access-title">{{ access.title }}</h3>
+              <span class="access-arrow">→</span>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  </div>
+</div>

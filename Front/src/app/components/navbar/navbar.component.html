@@ -1,0 +1,69 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <!-- Logo y título -->
+    <a [routerLink]="['/dashboard']" class="nav-brand">
+      <img src="img/logo-husrt-1024x320.png" alt="Hospital San Rafael" class="logo">
+      <span class="brand-name"></span>
+    </a>
+
+    <!-- Menú de navegación (desktop) -->
+    <ul class="nav-menu" [class.active]="isMenuOpen">
+      @for (item of menuItems; track item.label) {
+        <li class="nav-item" [class.has-submenu]="item.submenu">
+          <!-- Item sin submenú -->
+          @if (!item.submenu) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              class="nav-link"
+              (click)="closeMenu()">
+              <span class="nav-icon">{{ item.icon }}</span>
+              <span class="nav-label">{{ item.label }}</span>
+            </a>
+          }
+
+          <!-- Item con submenú -->
+          @if (item.submenu) {
+            <a
+              class="nav-link has-dropdown"
+              [class.open]="item.isOpen"
+              (click)="toggleSubmenu(item)">
+              <span class="nav-icon">{{ item.icon }}</span>
+              <span class="nav-label">{{ item.label }}</span>
+              <span class="dropdown-arrow">{{ item.isOpen ? '▼' : '▶' }}</span>
+            </a>
+
+            <!-- Submenú -->
+            <ul class="submenu" [class.open]="item.isOpen">
+              @for (subitem of item.submenu; track subitem.path) {
+                <li class="submenu-item">
+                  <a
+                    [routerLink]="subitem.path"
+                    routerLinkActive="active"
+                    class="submenu-link"
+                    (click)="closeMenu()">
+                    @if (subitem.icon) {
+                      <span class="submenu-icon">{{ subitem.icon }}</span>
+                    }
+                    <span class="submenu-label">{{ subitem.label }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      }
+    </ul>
+
+    <!-- Botón hamburguesa (mobile) -->
+    <button
+      class="hamburger"
+      [class.active]="isMenuOpen"
+      (click)="toggleMenu()"
+      aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>

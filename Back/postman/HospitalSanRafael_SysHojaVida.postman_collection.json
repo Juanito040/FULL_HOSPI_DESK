@@ -1,0 +1,1430 @@
+{
+	"info": {
+		"_postman_id": "hojavida-collection-002",
+		"name": "Hospital San Rafael - SysHojaVida API (Con Tests)",
+		"description": "Colección completa de endpoints para el módulo de Hojas de Vida de Equipos IT con tests automatizados de validación",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "API Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar tiempo de respuesta",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});",
+									"",
+									"// Test 3: Verificar que la respuesta sea JSON",
+									"pm.test(\"Response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"// Test 4: Verificar estructura de la respuesta",
+									"pm.test(\"Response has correct structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData).to.have.property('endpoints');",
+									"});",
+									"",
+									"// Test 5: Verificar que existan los endpoints",
+									"pm.test(\"Endpoints array exists and has items\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.endpoints).to.be.an('array');",
+									"    pm.expect(jsonData.endpoints.length).to.be.above(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api"
+							]
+						},
+						"description": "Verifica el estado general de la API y muestra los endpoints disponibles"
+					},
+					"response": []
+				},
+				{
+					"name": "Health Endpoint",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar estructura de health check",
+									"pm.test(\"Response has health check structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData).to.have.property('timestamp');",
+									"    pm.expect(jsonData).to.have.property('uptime');",
+									"});",
+									"",
+									"// Test 3: Verificar que el status sea 'OK'",
+									"pm.test(\"Status is OK\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql('OK');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						},
+						"description": "Verifica el estado de salud de la API"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hojas de Vida - Consultas",
+			"item": [
+				{
+					"name": "Obtener todas las hojas de vida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar estructura de paginación",
+									"pm.test(\"Response has pagination structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData).to.have.property('pagination');",
+									"    ",
+									"    var pagination = jsonData.pagination;",
+									"    pm.expect(pagination).to.have.property('total');",
+									"    pm.expect(pagination).to.have.property('totalPages');",
+									"    pm.expect(pagination).to.have.property('currentPage');",
+									"    pm.expect(pagination).to.have.property('perPage');",
+									"});",
+									"",
+									"// Test 3: Verificar que data sea un array",
+									"pm.test(\"Data is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});",
+									"",
+									"// Test 4: Si hay datos, verificar estructura del primer elemento",
+									"pm.test(\"First element has correct structure (if exists)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data.length > 0) {",
+									"        var firstItem = jsonData.data[0];",
+									"        pm.expect(firstItem).to.have.property('id_syshoja_vida');",
+									"        pm.expect(firstItem).to.have.property('ip');",
+									"        pm.expect(firstItem).to.have.property('sistema_operativo');",
+									"        pm.expect(firstItem).to.have.property('createdAt');",
+									"        pm.expect(firstItem).to.have.property('updatedAt');",
+									"        ",
+									"        // Guardar el ID del primer elemento para otros tests",
+									"        pm.collectionVariables.set(\"hoja_vida_id\", firstItem.id_syshoja_vida);",
+									"    }",
+									"});",
+									"",
+									"// Test 5: Verificar que los números de paginación sean válidos",
+									"pm.test(\"Pagination numbers are valid\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var pagination = jsonData.pagination;",
+									"    pm.expect(pagination.currentPage).to.be.a('number');",
+									"    pm.expect(pagination.perPage).to.be.a('number');",
+									"    pm.expect(pagination.total).to.be.a('number');",
+									"    pm.expect(pagination.totalPages).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Número de página"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Registros por página"
+								},
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"description": "Campo para ordenar",
+									"disabled": true
+								},
+								{
+									"key": "order",
+									"value": "DESC",
+									"description": "Orden: ASC o DESC",
+									"disabled": true
+								},
+								{
+									"key": "id_sysequipo_fk",
+									"value": "1",
+									"description": "Filtrar por ID de equipo",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "windows",
+									"description": "Búsqueda general",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Obtiene todas las hojas de vida con paginación y filtros opcionales"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener hoja de vida por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar que la respuesta tenga datos",
+									"pm.test(\"Response has data property\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"});",
+									"",
+									"// Test 3: Verificar estructura completa de la hoja de vida",
+									"pm.test(\"Hoja de vida has complete structure\", function () {",
+									"    var data = pm.response.json().data;",
+									"    ",
+									"    // Campos principales",
+									"    pm.expect(data).to.have.property('id_syshoja_vida');",
+									"    pm.expect(data).to.have.property('ip');",
+									"    pm.expect(data).to.have.property('mac');",
+									"    pm.expect(data).to.have.property('procesador');",
+									"    pm.expect(data).to.have.property('ram');",
+									"    pm.expect(data).to.have.property('disco_duro');",
+									"    pm.expect(data).to.have.property('sistema_operativo');",
+									"    pm.expect(data).to.have.property('office');",
+									"    pm.expect(data).to.have.property('tonner');",
+									"    ",
+									"    // Campos de usuario y proveedor",
+									"    pm.expect(data).to.have.property('nombre_usuario');",
+									"    pm.expect(data).to.have.property('vendedor');",
+									"    pm.expect(data).to.have.property('tipo_uso');",
+									"    ",
+									"    // Fechas y costos",
+									"    pm.expect(data).to.have.property('fecha_compra');",
+									"    pm.expect(data).to.have.property('fecha_instalacion');",
+									"    pm.expect(data).to.have.property('costo_compra');",
+									"    pm.expect(data).to.have.property('contrato');",
+									"    ",
+									"    // Documentación",
+									"    pm.expect(data).to.have.property('observaciones');",
+									"    pm.expect(data).to.have.property('foto');",
+									"    ",
+									"    // Tipo de adquisición",
+									"    pm.expect(data).to.have.property('compraddirecta');",
+									"    pm.expect(data).to.have.property('convenio');",
+									"    pm.expect(data).to.have.property('donado');",
+									"    pm.expect(data).to.have.property('comodato');",
+									"    ",
+									"    // Metadatos",
+									"    pm.expect(data).to.have.property('createdAt');",
+									"    pm.expect(data).to.have.property('updatedAt');",
+									"    pm.expect(data).to.have.property('id_sysequipo_fk');",
+									"});",
+									"",
+									"// Test 4: Verificar tipos de datos",
+									"pm.test(\"Data types are correct\", function () {",
+									"    var data = pm.response.json().data;",
+									"    pm.expect(data.id_syshoja_vida).to.be.a('number');",
+									"    pm.expect(data.compraddirecta).to.be.a('boolean');",
+									"    pm.expect(data.convenio).to.be.a('boolean');",
+									"    pm.expect(data.donado).to.be.a('boolean');",
+									"    pm.expect(data.comodato).to.be.a('boolean');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/{{hoja_vida_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"{{hoja_vida_id}}"
+							]
+						},
+						"description": "Obtiene una hoja de vida específica por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener hoja de vida por ID de equipo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado (200 o 404)",
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+									"});",
+									"",
+									"// Test 2: Si es 200, verificar estructura",
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"Response has data property\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('data');",
+									"    });",
+									"    ",
+									"    pm.test(\"Hoja de vida belongs to correct equipment\", function () {",
+									"        var data = pm.response.json().data;",
+									"        var equipoId = pm.collectionVariables.get('equipo_id');",
+									"        pm.expect(data.id_sysequipo_fk).to.eql(parseInt(equipoId));",
+									"    });",
+									"}",
+									"",
+									"// Test 3: Si es 404, verificar mensaje",
+									"if (pm.response.code === 404) {",
+									"    pm.test(\"404 response has error message\", function () {",
+									"        var jsonData = pm.response.json();",
+									"        pm.expect(jsonData).to.have.property('error');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/equipo/{{equipo_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"equipo",
+								"{{equipo_id}}"
+							]
+						},
+						"description": "Obtiene la hoja de vida asociada a un equipo específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar hojas de vida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar que retorne un array",
+									"pm.test(\"Response is an array\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"// Test 3: Verificar límite de resultados",
+									"pm.test(\"Results respect limit parameter\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var limit = parseInt(pm.request.url.query.get('limit'));",
+									"    pm.expect(jsonData.length).to.be.at.most(limit);",
+									"});",
+									"",
+									"// Test 4: Si hay resultados, verificar que contengan el término buscado",
+									"pm.test(\"Results contain search term (if any)\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var searchTerm = pm.request.url.query.get('q').toLowerCase();",
+									"    ",
+									"    if (jsonData.length > 0) {",
+									"        jsonData.forEach(function(item) {",
+									"            var found = false;",
+									"            var searchableFields = [",
+									"                item.ip, item.mac, item.procesador,",
+									"                item.sistema_operativo, item.nombre_usuario, item.vendedor",
+									"            ];",
+									"            ",
+									"            searchableFields.forEach(function(field) {",
+									"                if (field && field.toLowerCase().includes(searchTerm)) {",
+									"                    found = true;",
+									"                }",
+									"            });",
+									"            ",
+									"            pm.expect(found).to.be.true;",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/search?q=windows&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "windows",
+									"description": "Término de búsqueda"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Límite de resultados"
+								}
+							]
+						},
+						"description": "Busca hojas de vida por IP, MAC, procesador, SO, usuario o vendedor"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener estadísticas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar estructura de estadísticas",
+									"pm.test(\"Response has stats structure\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    ",
+									"    var data = jsonData.data;",
+									"    pm.expect(data).to.have.property('total');",
+									"    pm.expect(data).to.have.property('porSistemaOperativo');",
+									"    pm.expect(data).to.have.property('porTipoEquipo');",
+									"});",
+									"",
+									"// Test 3: Verificar tipos de datos",
+									"pm.test(\"Stats data types are correct\", function () {",
+									"    var data = pm.response.json().data;",
+									"    pm.expect(data.total).to.be.a('number');",
+									"    pm.expect(data.porSistemaOperativo).to.be.an('array');",
+									"    pm.expect(data.porTipoEquipo).to.be.an('array');",
+									"});",
+									"",
+									"// Test 4: Verificar estructura de los conteos",
+									"pm.test(\"Count items have correct structure\", function () {",
+									"    var data = pm.response.json().data;",
+									"    ",
+									"    if (data.porSistemaOperativo.length > 0) {",
+									"        var firstOS = data.porSistemaOperativo[0];",
+									"        pm.expect(firstOS).to.have.property('sistema_operativo');",
+									"        pm.expect(firstOS).to.have.property('count');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"stats"
+							]
+						},
+						"description": "Obtiene estadísticas de hojas de vida por sistema operativo y tipo de equipo"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hojas de Vida - Crear",
+			"item": [
+				{
+					"name": "Crear hoja de vida completa",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 201 (Created)",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Test 2: Verificar que retorne el objeto creado",
+									"pm.test(\"Response has data property with created object\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id_syshoja_vida');",
+									"});",
+									"",
+									"// Test 3: Verificar que los datos coincidan con lo enviado",
+									"pm.test(\"Created data matches request\", function () {",
+									"    var requestData = JSON.parse(pm.request.body.raw);",
+									"    var responseData = pm.response.json().data;",
+									"    ",
+									"    pm.expect(responseData.ip).to.eql(requestData.ip);",
+									"    pm.expect(responseData.mac).to.eql(requestData.mac);",
+									"    pm.expect(responseData.procesador).to.eql(requestData.procesador);",
+									"    pm.expect(responseData.sistema_operativo).to.eql(requestData.sistema_operativo);",
+									"});",
+									"",
+									"// Test 4: Guardar el ID creado para tests posteriores",
+									"pm.test(\"Save created ID to collection variable\", function () {",
+									"    var data = pm.response.json().data;",
+									"    pm.collectionVariables.set(\"created_hoja_vida_id\", data.id_syshoja_vida);",
+									"    pm.expect(data.id_syshoja_vida).to.be.a('number');",
+									"});",
+									"",
+									"// Test 5: Verificar que tenga timestamps",
+									"pm.test(\"Response has timestamps\", function () {",
+									"    var data = pm.response.json().data;",
+									"    pm.expect(data).to.have.property('createdAt');",
+									"    pm.expect(data).to.have.property('updatedAt');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar IP aleatoria para evitar conflictos",
+									"const randomIP = `192.168.1.${Math.floor(Math.random() * 200) + 50}`;",
+									"pm.collectionVariables.set(\"random_ip\", randomIP);",
+									"",
+									"// Generar MAC aleatoria",
+									"const randomMAC = Array(6).fill(0).map(() => ",
+									"    Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase()",
+									").join(':');",
+									"pm.collectionVariables.set(\"random_mac\", randomMAC);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ip\": \"{{random_ip}}\",\n  \"mac\": \"{{random_mac}}\",\n  \"procesador\": \"Intel Core i5-10400\",\n  \"ram\": \"16GB DDR4\",\n  \"disco_duro\": \"512GB SSD NVMe\",\n  \"sistema_operativo\": \"Windows 10 Pro\",\n  \"office\": \"Microsoft Office 2019 Professional\",\n  \"tonner\": \"N/A\",\n  \"nombre_usuario\": \"Juan Pérez\",\n  \"vendedor\": \"TechCorp S.A.S\",\n  \"tipo_uso\": \"Administrativo\",\n  \"fecha_compra\": \"2024-01-15\",\n  \"fecha_instalacion\": \"2024-01-20\",\n  \"costo_compra\": 2500000,\n  \"contrato\": \"CONT-2024-001\",\n  \"observaciones\": \"Equipo nuevo asignado al departamento de sistemas\",\n  \"foto\": \"/uploads/equipos/equipo_001.jpg\",\n  \"compraddirecta\": true,\n  \"convenio\": false,\n  \"donado\": false,\n  \"comodato\": false,\n  \"id_sysequipo_fk\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida"
+							]
+						},
+						"description": "Crea una nueva hoja de vida con todos los campos"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear hoja de vida mínima",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 201",
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Test 2: Verificar que se pueda crear con datos mínimos",
+									"pm.test(\"Can create with minimal data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('id_syshoja_vida');",
+									"});",
+									"",
+									"// Test 3: Verificar valores por defecto de booleanos",
+									"pm.test(\"Boolean fields have default false values\", function () {",
+									"    var data = pm.response.json().data;",
+									"    pm.expect(data.compraddirecta).to.be.a('boolean');",
+									"    pm.expect(data.convenio).to.be.a('boolean');",
+									"    pm.expect(data.donado).to.be.a('boolean');",
+									"    pm.expect(data.comodato).to.be.a('boolean');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generar IP aleatoria",
+									"const randomIP = `192.168.2.${Math.floor(Math.random() * 200) + 50}`;",
+									"pm.collectionVariables.set(\"random_ip_min\", randomIP);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ip\": \"{{random_ip_min}}\",\n  \"procesador\": \"Intel Core i3\",\n  \"ram\": \"8GB\",\n  \"sistema_operativo\": \"Windows 10 Home\",\n  \"id_sysequipo_fk\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida"
+							]
+						},
+						"description": "Crea una hoja de vida con campos mínimos (todos son opcionales)"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear hoja de vida - Validación IP inválida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 400 (Bad Request)",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"// Test 2: Verificar que retorne errores de validación",
+									"pm.test(\"Response has validation errors\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('errors');",
+									"    pm.expect(jsonData.errors).to.be.an('array');",
+									"});",
+									"",
+									"// Test 3: Verificar que el error sea sobre la IP",
+									"pm.test(\"Error mentions IP field\", function () {",
+									"    var errors = pm.response.json().errors;",
+									"    var ipError = errors.find(err => err.path === 'ip');",
+									"    pm.expect(ipError).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ip\": \"999.999.999.999\",\n  \"procesador\": \"Test Processor\",\n  \"ram\": \"8GB\",\n  \"sistema_operativo\": \"Test OS\",\n  \"id_sysequipo_fk\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida"
+							]
+						},
+						"description": "Test de validación: intenta crear una hoja de vida con IP inválida"
+					},
+					"response": []
+				},
+				{
+					"name": "Crear hoja de vida - Validación MAC inválida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 400",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"// Test 2: Verificar error en campo MAC",
+									"pm.test(\"Error mentions MAC field\", function () {",
+									"    var errors = pm.response.json().errors;",
+									"    var macError = errors.find(err => err.path === 'mac');",
+									"    pm.expect(macError).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ip\": \"192.168.1.100\",\n  \"mac\": \"INVALID-MAC-ADDRESS\",\n  \"procesador\": \"Test Processor\",\n  \"ram\": \"8GB\",\n  \"sistema_operativo\": \"Test OS\",\n  \"id_sysequipo_fk\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida"
+							]
+						},
+						"description": "Test de validación: intenta crear una hoja de vida con MAC inválida"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hojas de Vida - Actualizar",
+			"item": [
+				{
+					"name": "Actualizar completo (PUT)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar que retorne el objeto actualizado",
+									"pm.test(\"Response has updated data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"});",
+									"",
+									"// Test 3: Verificar que los datos se actualizaron",
+									"pm.test(\"Data was updated correctly\", function () {",
+									"    var requestData = JSON.parse(pm.request.body.raw);",
+									"    var responseData = pm.response.json().data;",
+									"    ",
+									"    pm.expect(responseData.procesador).to.eql(requestData.procesador);",
+									"    pm.expect(responseData.ram).to.eql(requestData.ram);",
+									"    pm.expect(responseData.disco_duro).to.eql(requestData.disco_duro);",
+									"});",
+									"",
+									"// Test 4: Verificar que updatedAt cambió",
+									"pm.test(\"updatedAt timestamp was updated\", function () {",
+									"    var data = pm.response.json().data;",
+									"    pm.expect(data.updatedAt).to.exist;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ip\": \"192.168.1.105\",\n  \"mac\": \"BB:CC:DD:EE:FF:00\",\n  \"procesador\": \"Intel Core i7-11700\",\n  \"ram\": \"32GB DDR4\",\n  \"disco_duro\": \"1TB SSD NVMe\",\n  \"sistema_operativo\": \"Windows 11 Pro\",\n  \"office\": \"Microsoft Office 2021\",\n  \"tonner\": \"N/A\",\n  \"nombre_usuario\": \"María González\",\n  \"vendedor\": \"TechCorp S.A.S\",\n  \"tipo_uso\": \"Diseño Gráfico\",\n  \"fecha_compra\": \"2024-01-15\",\n  \"fecha_instalacion\": \"2024-01-20\",\n  \"costo_compra\": 3500000,\n  \"contrato\": \"CONT-2024-001\",\n  \"observaciones\": \"Equipo actualizado con componentes de mayor rendimiento\",\n  \"foto\": \"/uploads/equipos/equipo_001_updated.jpg\",\n  \"compraddirecta\": true,\n  \"convenio\": false,\n  \"donado\": false,\n  \"comodato\": false,\n  \"id_sysequipo_fk\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/{{created_hoja_vida_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"{{created_hoja_vida_id}}"
+							]
+						},
+						"description": "Actualización completa de la hoja de vida (reemplaza todos los campos)"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar parcial (PATCH)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar que solo se actualizaron los campos enviados",
+									"pm.test(\"Only sent fields were updated\", function () {",
+									"    var requestData = JSON.parse(pm.request.body.raw);",
+									"    var responseData = pm.response.json().data;",
+									"    ",
+									"    // Verificar que los campos enviados se actualizaron",
+									"    Object.keys(requestData).forEach(function(key) {",
+									"        pm.expect(responseData[key]).to.exist;",
+									"    });",
+									"});",
+									"",
+									"// Test 3: Verificar mensaje de éxito",
+									"pm.test(\"Response has success message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ram\": \"64GB DDR4\",\n  \"disco_duro\": \"2TB SSD\",\n  \"observaciones\": \"Se realizó upgrade de RAM a 64GB y disco duro a 2TB\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/{{created_hoja_vida_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"{{created_hoja_vida_id}}"
+							]
+						},
+						"description": "Actualización parcial (solo los campos enviados)"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar - ID inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 404",
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// Test 2: Verificar mensaje de error",
+									"pm.test(\"Response has error message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"    pm.expect(jsonData.error).to.include('not found');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ram\": \"32GB\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/999999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"999999"
+							]
+						},
+						"description": "Test de error: intenta actualizar una hoja de vida inexistente"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Hojas de Vida - Eliminar",
+			"item": [
+				{
+					"name": "Eliminar hoja de vida",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 200",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Test 2: Verificar mensaje de éxito",
+									"pm.test(\"Response has success message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('eliminada');",
+									"});",
+									"",
+									"// Test 3: Limpiar variable de colección",
+									"pm.test(\"Clear collection variable\", function () {",
+									"    pm.collectionVariables.set(\"created_hoja_vida_id\", null);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/{{created_hoja_vida_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"{{created_hoja_vida_id}}"
+							]
+						},
+						"description": "Elimina una hoja de vida por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar - ID inexistente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar código de estado 404",
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// Test 2: Verificar mensaje de error",
+									"pm.test(\"Response has error message\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/999999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"999999"
+							]
+						},
+						"description": "Test de error: intenta eliminar una hoja de vida inexistente"
+					},
+					"response": []
+				},
+				{
+					"name": "Verificar eliminación (debe retornar 404)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test 1: Verificar que el recurso ya no existe",
+									"pm.test(\"Resource no longer exists (404)\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"// Test 2: Verificar mensaje de not found",
+									"pm.test(\"Response indicates resource not found\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/syshojasdevida/{{created_hoja_vida_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"syshojasdevida",
+								"{{created_hoja_vida_id}}"
+							]
+						},
+						"description": "Verifica que el registro eliminado ya no existe"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tests de Integración",
+			"item": [
+				{
+					"name": "Flujo completo: Crear -> Leer -> Actualizar -> Eliminar",
+					"item": [
+						{
+							"name": "1. Crear hoja de vida para test",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hoja de vida created successfully\", function () {",
+											"    pm.response.to.have.status(201);",
+											"    var data = pm.response.json().data;",
+											"    pm.collectionVariables.set(\"test_hoja_id\", data.id_syshoja_vida);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const randomIP = `192.168.99.${Math.floor(Math.random() * 254) + 1}`;",
+											"pm.collectionVariables.set(\"test_ip\", randomIP);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"ip\": \"{{test_ip}}\",\n  \"procesador\": \"Test Processor - Integration\",\n  \"ram\": \"16GB\",\n  \"sistema_operativo\": \"Test OS\",\n  \"id_sysequipo_fk\": 1\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/syshojasdevida",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"syshojasdevida"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "2. Leer hoja de vida creada",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Can read created hoja de vida\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    var data = pm.response.json().data;",
+											"    pm.expect(data.procesador).to.include('Integration');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/syshojasdevida/{{test_hoja_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"syshojasdevida",
+										"{{test_hoja_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "3. Actualizar hoja de vida",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hoja de vida updated successfully\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    var data = pm.response.json().data;",
+											"    pm.expect(data.ram).to.eql('32GB');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"ram\": \"32GB\",\n  \"observaciones\": \"Updated in integration test\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/syshojasdevida/{{test_hoja_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"syshojasdevida",
+										"{{test_hoja_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "4. Verificar actualización",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Update was persisted\", function () {",
+											"    pm.response.to.have.status(200);",
+											"    var data = pm.response.json().data;",
+											"    pm.expect(data.ram).to.eql('32GB');",
+											"    pm.expect(data.observaciones).to.include('integration test');",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/syshojasdevida/{{test_hoja_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"syshojasdevida",
+										"{{test_hoja_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "5. Eliminar hoja de vida",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Hoja de vida deleted successfully\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/syshojasdevida/{{test_hoja_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"syshojasdevida",
+										"{{test_hoja_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "6. Verificar eliminación",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Deleted resource returns 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"",
+											"// Limpiar variables de test",
+											"pm.collectionVariables.set(\"test_hoja_id\", null);",
+											"pm.collectionVariables.set(\"test_ip\", null);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/syshojasdevida/{{test_hoja_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"syshojasdevida",
+										"{{test_hoja_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Pre-request script global",
+					"console.log('Executing request to: ' + pm.request.url);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Test global: verificar Content-Type en todas las respuestas JSON",
+					"if (pm.response.code !== 404 && pm.response.code !== 500) {",
+					"    pm.test(\"Content-Type header is application/json\", function () {",
+					"        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "hoja_vida_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "equipo_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "created_hoja_vida_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "random_ip",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "random_mac",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "random_ip_min",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "test_hoja_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "test_ip",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

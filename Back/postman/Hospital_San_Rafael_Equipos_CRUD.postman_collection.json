@@ -1,0 +1,408 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4a5b-8c9d-1e2f3a4b5c6d",
+		"name": "Hospital San Rafael - Equipos CRUD",
+		"description": "Colección completa de endpoints para el CRUD de Equipos del Hospital San Rafael",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Consultas",
+			"item": [
+				{
+					"name": "Obtener todos los equipos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos"
+							]
+						},
+						"description": "Obtiene la lista completa de todos los equipos registrados en el sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener equipo por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del equipo a consultar"
+								}
+							]
+						},
+						"description": "Obtiene la información detallada de un equipo específico por su ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar equipos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/search?query=equipo&activo=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "equipo",
+									"description": "Término de búsqueda"
+								},
+								{
+									"key": "activo",
+									"value": "1",
+									"description": "Estado del equipo (0: inactivo, 1: activo)"
+								}
+							]
+						},
+						"description": "Busca equipos por nombre, marca, modelo, serie o placa"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener equipos por servicio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/servicio/:servicioId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								"servicio",
+								":servicioId"
+							],
+							"variable": [
+								{
+									"key": "servicioId",
+									"value": "1",
+									"description": "ID del servicio"
+								}
+							]
+						},
+						"description": "Obtiene todos los equipos asignados a un servicio específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener equipos por tipo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/tipo/:tipoId",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								"tipo",
+								":tipoId"
+							],
+							"variable": [
+								{
+									"key": "tipoId",
+									"value": "1",
+									"description": "ID del tipo de equipo"
+								}
+							]
+						},
+						"description": "Obtiene todos los equipos de un tipo específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener estadísticas de equipos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								"stats"
+							]
+						},
+						"description": "Obtiene estadísticas generales de los equipos registrados en el sistema"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para consultar información de equipos"
+		},
+		{
+			"name": "Crear",
+			"item": [
+				{
+					"name": "Crear nuevo equipo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombres\": \"Computadora Dell OptiPlex 7090\",\n  \"marca\": \"Dell\",\n  \"modelo\": \"OptiPlex 7090\",\n  \"serie\": \"DLPC-2025-001\",\n  \"placa\": \"EQ-IT-2025-001\",\n  \"registroInvima\": \"N/A\",\n  \"riesgo\": \"NA\",\n  \"ubicacion\": \"Área de Sistemas\",\n  \"ubicacionEspecifica\": \"Oficina Principal - Escritorio 1\",\n  \"activo\": 1,\n  \"periodicidadM\": 6,\n  \"periodicidadC\": 12,\n  \"estadoBaja\": 0,\n  \"calibracion\": 0,\n  \"calificacion\": 0,\n  \"validacion\": 0,\n  \"tipoEquipoIdFk\": 1,\n  \"servicioIdFk\": 1,\n  \"sedeIdFk\": 1,\n  \"responsableIdFk\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos"
+							]
+						},
+						"description": "Crea un nuevo equipo en el sistema con todos los campos requeridos"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para crear nuevos equipos"
+		},
+		{
+			"name": "Actualizar",
+			"item": [
+				{
+					"name": "Actualizar equipo completo (PUT)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombres\": \"Computadora Dell OptiPlex 7090 Actualizado\",\n  \"marca\": \"Dell\",\n  \"modelo\": \"OptiPlex 7090\",\n  \"serie\": \"DLPC-2025-001\",\n  \"placa\": \"EQ-IT-2025-001\",\n  \"registroInvima\": \"N/A\",\n  \"riesgo\": \"NA\",\n  \"ubicacion\": \"Área de Sistemas\",\n  \"ubicacionEspecifica\": \"Oficina Principal - Escritorio 2\",\n  \"activo\": 1,\n  \"periodicidadM\": 6,\n  \"periodicidadC\": 12,\n  \"estadoBaja\": 0,\n  \"calibracion\": 0,\n  \"calificacion\": 0,\n  \"validacion\": 0,\n  \"tipoEquipoIdFk\": 1,\n  \"servicioIdFk\": 1,\n  \"sedeIdFk\": 1,\n  \"responsableIdFk\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del equipo a actualizar"
+								}
+							]
+						},
+						"description": "Actualiza todos los campos de un equipo existente (reemplazo completo)"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar equipo parcial (PATCH)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ubicacionEspecifica\": \"Oficina Secundaria - Escritorio 5\",\n  \"periodicidadM\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del equipo a actualizar"
+								}
+							]
+						},
+						"description": "Actualiza solo los campos específicos de un equipo (actualización parcial)"
+					},
+					"response": []
+				},
+				{
+					"name": "Reactivar equipo",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/:id/reactivar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								":id",
+								"reactivar"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del equipo a reactivar"
+								}
+							]
+						},
+						"description": "Reactiva un equipo que había sido dado de baja o desactivado"
+					},
+					"response": []
+				},
+				{
+					"name": "Dar de baja equipo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"motivo\": \"Equipo obsoleto y sin posibilidad de reparación\",\n  \"observaciones\": \"El equipo presenta fallas graves en el sistema y no es rentable su reparación\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/:id/baja",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								":id",
+								"baja"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del equipo a dar de baja"
+								}
+							]
+						},
+						"description": "Da de baja un equipo del sistema con motivo y observaciones"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para actualizar equipos existentes"
+		},
+		{
+			"name": "Eliminar",
+			"item": [
+				{
+					"name": "Eliminar equipo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/sysequipos/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"sysequipos",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del equipo a eliminar"
+								}
+							]
+						},
+						"description": "Elimina un equipo del sistema de forma permanente"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para eliminar equipos"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

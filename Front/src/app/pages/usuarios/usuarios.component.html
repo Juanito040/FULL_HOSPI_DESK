@@ -1,0 +1,126 @@
+<div class="usuarios-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1 class="page-title">
+      <span class="title-icon"></span>
+      Gestión de Usuarios
+    </h1>
+    <p class="page-description">Administra usuarios, equipos y formatos del sistema</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'usuarios'"
+      (click)="setActiveTab('usuarios')">
+      <span class="tab-icon"></span>
+      <span>Control de Usuarios</span>
+    </button>
+
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'equipos'"
+      (click)="setActiveTab('equipos')">
+      <span class="tab-icon"></span>
+      <span>Control de Equipos</span>
+    </button>
+
+    <button
+      class="tab-button"
+      [class.active]="activeTab === 'formatos'"
+      (click)="setActiveTab('formatos')">
+      <span class="tab-icon"></span>
+      <span>Formatos</span>
+    </button>
+  </div>
+
+  <!-- Contenido de las tabs -->
+  <div class="tab-content">
+    <!-- Tab: Control de Usuarios -->
+    @if (activeTab === 'usuarios') {
+      <div class="content-section">
+        <div class="section-header">
+          <h2>Control de Usuarios</h2>
+          <button class="btn btn-primary">
+            <span>➕</span>
+            <span>Nuevo Usuario</span>
+          </button>
+        </div>
+
+        <div class="empty-state">
+          <div class="empty-icon"></div>
+          <h3>Gestión de Usuarios</h3>
+          <p>Funcionalidad en desarrollo. Próximamente podrás crear, editar y eliminar usuarios del sistema.</p>
+          <div class="features-grid">
+            <div class="feature-card">
+              <span class="feature-icon">✨</span>
+              <span class="feature-name">Crear Usuarios</span>
+            </div>
+            <div class="feature-card">
+              <span class="feature-icon">✏️</span>
+              <span class="feature-name">Editar Perfiles</span>
+            </div>
+            <div class="feature-card">
+              <span class="feature-icon">🔐</span>
+              <span class="feature-name">Permisos</span>
+            </div>
+            <div class="feature-card">
+              <span class="feature-icon">📊</span>
+              <span class="feature-name">Reportes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Tab: Control de Equipos -->
+    @if (activeTab === 'equipos') {
+      <div class="content-section">
+        <div class="section-header">
+          <h2>Control de Equipos</h2>
+          <a routerLink="/equipos" class="btn btn-primary">
+            <span>  </span>
+            <span>Ir a Equipos</span>
+          </a>
+        </div>
+
+        <div class="info-card">
+          <div class="info-icon">ℹ️</div>
+          <div class="info-content">
+            <h3>Gestión de Equipos</h3>
+            <p>Puedes gestionar todos los equipos del sistema desde el módulo de equipos. Haz clic en el botón "Ir a Equipos" para acceder a la funcionalidad completa.</p>
+            <ul class="info-list">
+              <li>✅ Crear nuevos equipos con su hoja de vida</li>
+              <li>✅ Editar información de equipos existentes</li>
+              <li>✅ Configurar mantenimientos periódicos</li>
+              <li>✅ Gestionar hojas de vida de equipos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Tab: Formatos -->
+    @if (activeTab === 'formatos') {
+      <div class="content-section">
+        <div class="section-header">
+          <h2>Formatos del Sistema</h2>
+        </div>
+
+        <div class="formatos-grid">
+          @for (formato of formatos; track formato.ruta) {
+            <a [routerLink]="formato.ruta" class="formato-card">
+              <div class="formato-icon">{{ formato.icono }}</div>
+              <div class="formato-content">
+                <h3 class="formato-nombre">{{ formato.nombre }}</h3>
+                <p class="formato-descripcion">{{ formato.descripcion }}</p>
+              </div>
+              <div class="formato-arrow">→</div>
+            </a>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,138 @@
+/* Overlay */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Container */
+.dialog-container {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: scaleIn 0.3s ease-in-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Icon */
+.dialog-icon {
+  font-size: 4rem;
+  width: 5rem;
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.dialog-icon-danger {
+  background-color: #fee;
+  color: var(--danger-color);
+}
+
+.dialog-icon-warning {
+  background-color: #fef3c7;
+  color: #f59e0b;
+}
+
+.dialog-icon-info {
+  background-color: #dbeafe;
+  color: var(--primary-color);
+}
+
+/* Content */
+.dialog-content {
+  text-align: center;
+}
+
+.dialog-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin: 0 0 0.5rem 0;
+}
+
+.dialog-message {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Actions */
+.dialog-actions {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.dialog-actions button {
+  flex: 1;
+}
+
+/* Botón danger específico */
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .dialog-container {
+    padding: 1.5rem;
+  }
+
+  .dialog-icon {
+    font-size: 3rem;
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .dialog-title {
+    font-size: 1.125rem;
+  }
+
+  .dialog-actions {
+    flex-direction: column-reverse;
+  }
+}

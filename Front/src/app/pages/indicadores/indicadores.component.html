@@ -1,0 +1,155 @@
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Indicadores y Estadísticas</h1>
+      <p class="subtitle">Análisis de rendimiento y métricas del sistema</p>
+    </div>
+    <div class="period-selector">
+      <select class="filter-select" [disabled]="isLoading">
+        <option value="mes">Último mes</option>
+        <option value="trimestre">Último trimestre</option>
+        <option value="semestre">Último semestre</option>
+        <option value="anio">Último año</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Mensaje de carga -->
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner">⏳</div>
+      <p>Cargando indicadores...</p>
+    </div>
+  }
+
+  <!-- Mensaje de error -->
+  @if (error && !isLoading) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <p>{{ error }}</p>
+      <button class="btn btn-primary" (click)="loadDashboard()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Métricas principales -->
+  @if (!isLoading && !error) {
+    <div class="metrics-grid">
+    @for (metrica of metricas; track metrica.title) {
+      <div class="metric-card">
+        <div class="metric-icon" [style.backgroundColor]="metrica.color + '20'" [style.color]="metrica.color">
+          {{ metrica.icon }}
+        </div>
+        <div class="metric-content">
+          <h3 class="metric-title">{{ metrica.title }}</h3>
+          <div class="metric-value">{{ metrica.value }}</div>
+          <div class="metric-trend" [class]="getTrendClass(metrica.trend)">
+            <span class="trend-icon">{{ getTrendIcon(metrica.trend) }}</span>
+            <span>{{ metrica.trendValue }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Gráficos y estadísticas -->
+  <div class="stats-grid">
+    <!-- Estadísticas por tipo de mantenimiento -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Mantenimientos por Tipo</h2>
+      </div>
+      <div class="stats-list">
+        @for (stat of estadisticasTipo; track stat.label) {
+          <div class="stat-item">
+            <div class="stat-label">
+              <span class="color-dot" [style.backgroundColor]="stat.color"></span>
+              <span>{{ stat.label }}</span>
+            </div>
+            <div class="stat-value-container">
+              <span class="stat-number">{{ stat.value }}</span>
+              <span class="stat-percentage">({{ stat.percentage }}%)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="stat.percentage" [style.backgroundColor]="stat.color"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Estadísticas por tipo de falla -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Fallas por Tipo</h2>
+      </div>
+      <div class="stats-list">
+        @for (falla of estadisticasFalla; track falla.label) {
+          <div class="stat-item">
+            <div class="stat-label">
+              <span class="color-dot" [style.backgroundColor]="falla.color"></span>
+              <span>{{ falla.label }}</span>
+            </div>
+            <div class="stat-value-container">
+              <span class="stat-number">{{ falla.value }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Equipos por estado -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Estado de Equipos</h2>
+      </div>
+      <div class="stats-list">
+        @for (equipo of equiposPorEstado; track equipo.label) {
+          <div class="stat-item">
+            <div class="stat-label">
+              <span class="color-dot" [style.backgroundColor]="equipo.color"></span>
+              <span>{{ equipo.label }}</span>
+            </div>
+            <div class="stat-value-container">
+              <span class="stat-number">{{ equipo.value }}</span>
+              <span class="stat-percentage">({{ equipo.percentage }}%)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="equipo.percentage" [style.backgroundColor]="equipo.color"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Tiempo fuera de servicio -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Tiempo Fuera de Servicio (Horas)</h2>
+      </div>
+      <div class="bar-chart">
+        @for (item of tiempoFueraServicio; track item.mes) {
+          <div class="bar-item">
+            <div class="bar-value">{{ item.horas }}h</div>
+            <div class="bar-container">
+              <div class="bar-fill" [style.height]="getBarHeight(item.horas)"></div>
+            </div>
+            <div class="bar-label">{{ item.mes }}</div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+    <!-- Botones de acción -->
+    <div class="actions-footer">
+      <button class="btn btn-primary">
+        <span>📊</span>
+        <span>Exportar Informe</span>
+      </button>
+      <button class="btn btn-secondary">
+        <span>📄</span>
+        <span>Generar PDF</span>
+      </button>
+    </div>
+  }
+</div>

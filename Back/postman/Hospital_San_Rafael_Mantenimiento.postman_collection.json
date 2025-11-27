@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "b2c3d4e5-f6a7-4b8c-9d0e-2f3a4b5c6d7e",
+		"name": "Hospital San Rafael - Mantenimiento CRUD",
+		"description": "Colección completa de endpoints para el módulo de Mantenimiento del Hospital San Rafael",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345679"
+	},
+	"item": [
+		{
+			"name": "Mantenimiento",
+			"item": [
+				{
+					"name": "Dashboard de mantenimientos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/mantenimiento",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"mantenimiento"
+							]
+						},
+						"description": "Obtiene el dashboard de mantenimientos del mes actual con estadísticas e indicadores"
+					},
+					"response": []
+				},
+				{
+					"name": "Filtrar mantenimientos",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"daterange\": \"01/01/2025 - 01/31/2025\",\n  \"usuarioprogramado\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/mantenimiento/filtrar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"mantenimiento",
+								"filtrar"
+							]
+						},
+						"description": "Filtra mantenimientos por rango de fechas y técnico específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener mantenimientos preventivos por mes/año",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/mantenimiento/preventivos/:mes/:ano",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"mantenimiento",
+								"preventivos",
+								":mes",
+								":ano"
+							],
+							"variable": [
+								{
+									"key": "mes",
+									"value": "1",
+									"description": "Mes (1-12)"
+								},
+								{
+									"key": "ano",
+									"value": "2025",
+									"description": "Año"
+								}
+							]
+						},
+						"description": "Obtiene todos los mantenimientos preventivos de un mes y año específico"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener lista de técnicos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/mantenimiento/tecnicos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"mantenimiento",
+								"tecnicos"
+							]
+						},
+						"description": "Obtiene la lista de todos los técnicos disponibles"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para la gestión de mantenimientos preventivos"
+		},
+		{
+			"name": "Reportes",
+			"item": [
+				{
+					"name": "Crear reporte",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idEquipo\": 1,\n  \"fecha\": \"2025-01-20\",\n  \"horaLlamado\": \"08:00\",\n  \"horaInicio\": \"08:30\",\n  \"horaTerminacion\": \"10:00\",\n  \"tipoMantenimiento\": 1,\n  \"tipoFalla\": \"Desgaste\",\n  \"trabajoRealizado\": \"Limpieza general del equipo, revisión de componentes internos y calibración\",\n  \"repuestoCambiado\": \"Ninguno\",\n  \"motivo\": \"Mantenimiento preventivo programado\",\n  \"observaciones\": \"Equipo funcionando correctamente después del mantenimiento\",\n  \"mantenimientoPropio\": true,\n  \"nombreRecibio\": \"Juan Pérez\",\n  \"cedulaRecibio\": \"1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reportes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reportes"
+							]
+						},
+						"description": "Crea un nuevo reporte de mantenimiento"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener reporte por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reportes/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reportes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del reporte"
+								}
+							]
+						},
+						"description": "Obtiene un reporte específico por su ID con todos los detalles"
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar reporte",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"observaciones\": \"Observaciones actualizadas del mantenimiento\",\n  \"trabajoRealizado\": \"Trabajo realizado actualizado\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/reportes/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reportes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del reporte a actualizar"
+								}
+							]
+						},
+						"description": "Actualiza los datos de un reporte existente"
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar reporte",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reportes/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reportes",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID del reporte a eliminar"
+								}
+							]
+						},
+						"description": "Elimina un reporte del sistema"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener reportes por equipo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/reportes/equipo/:idEquipo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"reportes",
+								"equipo",
+								":idEquipo"
+							],
+							"variable": [
+								{
+									"key": "idEquipo",
+									"value": "1",
+									"description": "ID del equipo"
+								}
+							]
+						},
+						"description": "Obtiene todos los reportes asociados a un equipo específico"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para la gestión de reportes de mantenimiento"
+		},
+		{
+			"name": "Tipos de Mantenimiento",
+			"item": [],
+			"description": "Referencia de tipos de mantenimiento:\n- 1: Correctivo\n- 2: Preventivo\n- 3: Predictivo\n- 4: Otro"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

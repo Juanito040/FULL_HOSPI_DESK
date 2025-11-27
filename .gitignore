@@ -1,0 +1,103 @@
+# ========================================
+# DEPENDENCIES
+# ========================================
+**/node_modules/
+**/package-lock.json
+**/yarn.lock
+
+# ========================================
+# ANGULAR / FRONTEND
+# ========================================
+Front/dist/
+Front/.angular/
+Front/.sass-cache/
+Front/coverage/
+Front/.nyc_output/
+
+# ========================================
+# BACKEND / NODE.js
+# ========================================
+Back/dist/
+Back/build/
+Back/uploads/
+Back/public/uploads/
+
+# ========================================
+# ENVIRONMENT VARIABLES
+# ========================================
+**/.env
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# ========================================
+# LOGS
+# ========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ========================================
+# IDEs and Editors
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# ========================================
+# SYSTEM FILES
+# ========================================
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ========================================
+# TEMPORARY FILES
+# ========================================
+*.tmp
+*.temp
+tmp/
+temp/
+
+# ========================================
+# BACKUPS
+# ========================================
+*.bak
+*.backup
+backup/
+
+# ========================================
+# TESTING
+# ========================================
+coverage/
+.nyc_output/
+*.lcov
+
+# ========================================
+# DATABASE
+# ========================================
+*.sql.backup
+*.db
+*.sqlite
+*.sqlite3
+
+# ========================================
+# OTROS
+# ========================================
+.cache/
+.parcel-cache/

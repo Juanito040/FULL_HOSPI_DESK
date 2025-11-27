@@ -1,0 +1,124 @@
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Gestión de Mantenimientos</h1>
+      <p class="subtitle">Administra todos los mantenimientos de equipos de sistemas</p>
+    </div>
+    <button class="btn btn-primary">
+      <span>➕</span>
+      <span>Nuevo Mantenimiento</span>
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Buscar por reporte, equipo, técnico u observaciones..."
+        (input)="onSearch($event)"
+        [disabled]="isLoading"
+      />
+    </div>
+    <div class="filters">
+      <select class="filter-select" (change)="onTipoChange($event)" [disabled]="isLoading">
+        <option value="">Todos los tipos</option>
+        <option value="Preventivo">Preventivo</option>
+        <option value="Correctivo">Correctivo</option>
+        <option value="Predictivo">Predictivo</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <select class="filter-select" (change)="onEstadoChange($event)" [disabled]="isLoading">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="en_proceso">En proceso</option>
+        <option value="completado">Completado</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Mensaje de carga -->
+  @if (isLoading) {
+    <div class="loading-state">
+      <div class="spinner">⏳</div>
+      <p>Cargando mantenimientos...</p>
+    </div>
+  }
+
+  <!-- Mensaje de error -->
+  @if (error && !isLoading) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <p>{{ error }}</p>
+      <button class="btn btn-primary" (click)="loadMantenimientos()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Tabla de mantenimientos -->
+  @if (!isLoading && !error) {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Reporte</th>
+            <th>Fecha</th>
+            <th>Tipo</th>
+            <th>Falla</th>
+            <th>Técnico</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (mant of filteredMantenimientos; track mant.id_sysmtto) {
+            <tr>
+              <td><strong>{{ mant.numero_reporte || 'N/A' }}</strong></td>
+              <td>{{ formatFecha(mant.fecha) }}</td>
+              <td>
+                <span [class]="getTipoMantenimientoBadgeClass(mant.tipo_mantenimiento || '')">
+                  {{ mant.tipo_mantenimiento || 'N/A' }}
+                </span>
+              </td>
+              <td>
+                @if (mant.tipo_falla) {
+                  <span class="falla-text">{{ mant.tipo_falla }}</span>
+                } @else {
+                  <span class="text-muted">-</span>
+                }
+              </td>
+              <td>{{ mant.nombre_tecnico || 'N/A' }}</td>
+              <td>
+                <span [class]="getEstadoBadgeClass(mant.estado || '')">
+                  {{ formatEstado(mant.estado || 'pendiente') }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" title="Ver detalles">👁️</button>
+                  <button class="btn-icon" title="Editar">✏️</button>
+                  <button class="btn-icon" title="Generar PDF">📄</button>
+                  <button class="btn-icon" title="Eliminar" (click)="deleteMantenimiento(mant.id_sysmtto!)">🗑️</button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-state">
+                <div class="empty-icon">🔧</div>
+                <p>No se encontraron mantenimientos</p>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Paginación (placeholder) -->
+  <div class="pagination">
+    <button class="btn btn-secondary">Anterior</button>
+    <span class="page-info">Página 1 de 1</span>
+    <button class="btn btn-secondary">Siguiente</button>
+  </div>
+</div>

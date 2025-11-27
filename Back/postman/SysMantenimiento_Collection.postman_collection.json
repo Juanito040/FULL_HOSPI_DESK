@@ -1,0 +1,424 @@
+{
+  "info": {
+    "name": "Hospital San Rafael - SysMantenimiento API",
+    "description": "Colección completa de endpoints para el módulo de mantenimientos de sistemas (IT)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678"
+  },
+  "item": [
+    {
+      "name": "Dashboard y Estadísticas",
+      "item": [
+        {
+          "name": "Dashboard Completo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/dashboard?fecha_inicio=2025-01-01&fecha_fin=2025-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "dashboard"],
+              "query": [
+                {
+                  "key": "fecha_inicio",
+                  "value": "2025-01-01",
+                  "description": "Fecha inicio (YYYY-MM-DD) - Opcional"
+                },
+                {
+                  "key": "fecha_fin",
+                  "value": "2025-12-31",
+                  "description": "Fecha fin (YYYY-MM-DD) - Opcional"
+                }
+              ]
+            },
+            "description": "Obtiene dashboard completo con todas las estadísticas del período especificado"
+          },
+          "response": []
+        },
+        {
+          "name": "Dashboard Mes Actual",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "dashboard"]
+            },
+            "description": "Obtiene dashboard del mes actual (sin parámetros)"
+          },
+          "response": []
+        },
+        {
+          "name": "Estadísticas por Tipo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/estadisticas/tipo?fecha_inicio=2025-11-01&fecha_fin=2025-11-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "estadisticas", "tipo"],
+              "query": [
+                {
+                  "key": "fecha_inicio",
+                  "value": "2025-11-01"
+                },
+                {
+                  "key": "fecha_fin",
+                  "value": "2025-11-30"
+                }
+              ]
+            },
+            "description": "Estadísticas por tipo de mantenimiento (Correctivo, Preventivo, Predictivo, Otro)"
+          },
+          "response": []
+        },
+        {
+          "name": "Estadísticas por Falla",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/estadisticas/falla?fecha_inicio=2025-11-01&fecha_fin=2025-11-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "estadisticas", "falla"],
+              "query": [
+                {
+                  "key": "fecha_inicio",
+                  "value": "2025-11-01"
+                },
+                {
+                  "key": "fecha_fin",
+                  "value": "2025-11-30"
+                }
+              ]
+            },
+            "description": "Estadísticas por tipo de falla"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CRUD Mantenimientos",
+      "item": [
+        {
+          "name": "Listar Todos los Mantenimientos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento"]
+            },
+            "description": "Obtiene todos los mantenimientos sin filtros"
+          },
+          "response": []
+        },
+        {
+          "name": "Listar con Filtros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento?id_equipo=1&tipo_mantenimiento=Preventivo&fecha_inicio=2025-01-01&fecha_fin=2025-12-31",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento"],
+              "query": [
+                {
+                  "key": "id_equipo",
+                  "value": "1",
+                  "description": "ID del equipo"
+                },
+                {
+                  "key": "tipo_mantenimiento",
+                  "value": "Preventivo",
+                  "description": "Correctivo | Preventivo | Predictivo | Otro"
+                },
+                {
+                  "key": "fecha_inicio",
+                  "value": "2025-01-01"
+                },
+                {
+                  "key": "fecha_fin",
+                  "value": "2025-12-31"
+                }
+              ]
+            },
+            "description": "Obtiene mantenimientos con filtros aplicados"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Mantenimiento por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "1"]
+            },
+            "description": "Obtiene un mantenimiento específico por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Mantenimiento Completo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_sysequipo_fk\": 1,\n  \"numero_reporte\": \"MTTO-SYS-2025-001\",\n  \"fecha\": \"2025-11-21\",\n  \"hora_llamado\": \"08:00:00\",\n  \"hora_inicio\": \"08:30:00\",\n  \"hora_terminacion\": \"10:30:00\",\n  \"tipo_mantenimiento\": \"Preventivo\",\n  \"tipo_falla\": \"Sin Falla\",\n  \"mphardware\": \"1. Limpieza interna de componentes\\n2. Revisión de ventiladores\\n3. Verificación de conexiones\\n4. Limpieza de puertos USB\",\n  \"mpsoftware\": \"1. Actualización de sistema operativo\\n2. Actualización de antivirus\\n3. Limpieza de archivos temporales\\n4. Optimización de disco\",\n  \"rutinah\": \"- Limpieza profunda\\n- Cambio de pasta térmica\\n- Verificación de temperatura\",\n  \"rutinas\": \"- Escaneo completo de virus\\n- Desfragmentación de disco\\n- Actualización de drivers\",\n  \"observacionesh\": \"El equipo presentaba acumulación de polvo. Se realizó limpieza completa.\",\n  \"observacioness\": \"Sistema operativo actualizado correctamente. Antivirus funcionando.\",\n  \"autor_realizado\": \"Juan Pérez - Técnico IT\",\n  \"autor_recibido\": \"María García - Jefe de Enfermería\",\n  \"tiempo_fuera_servicio\": 120,\n  \"dano\": \"Ninguno\",\n  \"entega\": \"Equipo entregado en perfecto estado de funcionamiento\",\n  \"rutahardware\": \"/reportes/mtto-hardware-001.pdf\",\n  \"rutasoftware\": \"/reportes/mtto-software-001.pdf\",\n  \"rutaentrega\": \"/reportes/acta-entrega-001.pdf\",\n  \"id_sysusuario_fk\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento"]
+            },
+            "description": "Crea un nuevo mantenimiento con todos los campos"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Mantenimiento Mínimo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_sysequipo_fk\": 2,\n  \"fecha\": \"2025-11-21\",\n  \"tipo_mantenimiento\": \"Correctivo\",\n  \"mphardware\": \"Reemplazo de disco duro\",\n  \"autor_realizado\": \"Pedro López\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento"]
+            },
+            "description": "Crea un mantenimiento con campos mínimos requeridos"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Mantenimiento",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hora_terminacion\": \"11:00:00\",\n  \"tiempo_fuera_servicio\": 150,\n  \"observacionesh\": \"Observaciones actualizadas: Equipo requiere seguimiento\",\n  \"rutahardware\": \"/reportes/mtto-hardware-001-final.pdf\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "1"]
+            },
+            "description": "Actualiza campos específicos de un mantenimiento existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Mantenimiento",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "1"]
+            },
+            "description": "Elimina un mantenimiento por ID"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Consultas Específicas",
+      "item": [
+        {
+          "name": "Mantenimientos por Equipo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/equipo/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "equipo", "1"]
+            },
+            "description": "Obtiene todos los mantenimientos de un equipo específico"
+          },
+          "response": []
+        },
+        {
+          "name": "Mantenimientos por Técnico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/tecnico/5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "tecnico", "5"]
+            },
+            "description": "Obtiene todos los mantenimientos realizados por un técnico"
+          },
+          "response": []
+        },
+        {
+          "name": "Mantenimientos por Técnico con Fechas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento/tecnico/5?fecha_inicio=2025-11-01&fecha_fin=2025-11-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento", "tecnico", "5"],
+              "query": [
+                {
+                  "key": "fecha_inicio",
+                  "value": "2025-11-01"
+                },
+                {
+                  "key": "fecha_fin",
+                  "value": "2025-11-30"
+                }
+              ]
+            },
+            "description": "Obtiene mantenimientos de un técnico en un rango de fechas"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ejemplos de Diferentes Tipos",
+      "item": [
+        {
+          "name": "Mantenimiento Correctivo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_sysequipo_fk\": 3,\n  \"numero_reporte\": \"CORR-SYS-2025-001\",\n  \"fecha\": \"2025-11-21\",\n  \"hora_llamado\": \"14:00:00\",\n  \"hora_inicio\": \"14:15:00\",\n  \"hora_terminacion\": \"16:00:00\",\n  \"tipo_mantenimiento\": \"Correctivo\",\n  \"tipo_falla\": \"Operación Indebida\",\n  \"mphardware\": \"Reemplazo de fuente de poder dañada\",\n  \"dano\": \"Fuente de poder quemada por sobrecarga eléctrica\",\n  \"autor_realizado\": \"Carlos Ramírez\",\n  \"autor_recibido\": \"Ana Torres\",\n  \"tiempo_fuera_servicio\": 105,\n  \"id_sysusuario_fk\": 3\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento"]
+            },
+            "description": "Ejemplo de mantenimiento correctivo"
+          },
+          "response": []
+        },
+        {
+          "name": "Mantenimiento Predictivo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_sysequipo_fk\": 4,\n  \"numero_reporte\": \"PRED-SYS-2025-001\",\n  \"fecha\": \"2025-11-21\",\n  \"tipo_mantenimiento\": \"Predictivo\",\n  \"tipo_falla\": \"Desgaste\",\n  \"mphardware\": \"Análisis de temperatura y rendimiento del procesador\",\n  \"observacionesh\": \"Temperaturas elevadas detectadas. Se recomienda cambio de pasta térmica en próximos 30 días.\",\n  \"autor_realizado\": \"Roberto Díaz\",\n  \"id_sysusuario_fk\": 6\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento"]
+            },
+            "description": "Ejemplo de mantenimiento predictivo"
+          },
+          "response": []
+        },
+        {
+          "name": "Mantenimiento Solo Software",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_sysequipo_fk\": 5,\n  \"numero_reporte\": \"SOFT-SYS-2025-001\",\n  \"fecha\": \"2025-11-21\",\n  \"tipo_mantenimiento\": \"Preventivo\",\n  \"tipo_falla\": \"Sin Falla\",\n  \"mpsoftware\": \"Instalación de actualizaciones de seguridad críticas\",\n  \"rutinas\": \"1. Backup completo del sistema\\n2. Instalación de parches\\n3. Reinicio y verificación\",\n  \"observacioness\": \"Sistema actualizado exitosamente. No se detectaron problemas.\",\n  \"autor_realizado\": \"Laura Mendoza\",\n  \"tiempo_fuera_servicio\": 30,\n  \"rutasoftware\": \"/reportes/actualizacion-soft-001.pdf\",\n  \"id_sysusuario_fk\": 7\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/sysmantenimiento",
+              "host": ["{{base_url}}"],
+              "path": ["api", "sysmantenimiento"]
+            },
+            "description": "Ejemplo de mantenimiento solo de software"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "API Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api",
+              "host": ["{{base_url}}"],
+              "path": ["api"]
+            },
+            "description": "Verifica que la API está funcionando y muestra endpoints disponibles"
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health"]
+            },
+            "description": "Verifica el estado del servidor"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}

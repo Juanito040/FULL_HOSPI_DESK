@@ -1,0 +1,714 @@
+@if (isOpen) {
+  <div class="modal-overlay">
+    <div class="modal-container">
+      <!-- Header -->
+      <div class="modal-header">
+        <h2>{{ modalTitle }}</h2>
+        <button class="btn-close" (click)="close()" type="button">✕</button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        @if (errorMessage) {
+          <div class="alert alert-error">
+            <span>⚠️</span>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <form [formGroup]="equipoForm">
+          <!-- Información Básica -->
+          <div class="form-section">
+            <h3 class="section-title">Información Básica</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="nombre_equipo">Nombre del Equipo <span class="required">*</span></label>
+                <input
+                  type="text"
+                  id="nombre_equipo"
+                  formControlName="nombre_equipo"
+                  [class.error]="hasError('nombre_equipo')"
+                  placeholder="Ej: PC-ADMIN-01"
+                />
+                @if (hasError('nombre_equipo')) {
+                  <span class="error-message">{{ getErrorMessage('nombre_equipo') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="activo">Estado</label>
+                <select id="activo" formControlName="activo" [class.error]="hasError('activo')">
+                  <option [value]="1">Activo</option>
+                  <option [value]="0">Inactivo</option>
+                </select>
+                @if (hasError('activo')) {
+                  <span class="error-message">{{ getErrorMessage('activo') }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="marca">Marca</label>
+                <input
+                  type="text"
+                  id="marca"
+                  formControlName="marca"
+                  [class.error]="hasError('marca')"
+                  placeholder="Ej: Dell, HP, Lenovo"
+                />
+                @if (hasError('marca')) {
+                  <span class="error-message">{{ getErrorMessage('marca') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="modelo">Modelo</label>
+                <input
+                  type="text"
+                  id="modelo"
+                  formControlName="modelo"
+                  [class.error]="hasError('modelo')"
+                  placeholder="Ej: OptiPlex 9020"
+                />
+                @if (hasError('modelo')) {
+                  <span class="error-message">{{ getErrorMessage('modelo') }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="serie">Número de Serie</label>
+                <input
+                  type="text"
+                  id="serie"
+                  formControlName="serie"
+                  [class.error]="hasError('serie')"
+                  placeholder="Ej: SN-123456789"
+                />
+                @if (hasError('serie')) {
+                  <span class="error-message">{{ getErrorMessage('serie') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="placa_inventario">Placa de Inventario</label>
+                <input
+                  type="text"
+                  id="placa_inventario"
+                  formControlName="placa_inventario"
+                  [class.error]="hasError('placa_inventario')"
+                  placeholder="Ej: INV-2025-001"
+                />
+                @if (hasError('placa_inventario')) {
+                  <span class="error-message">{{ getErrorMessage('placa_inventario') }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="codigo">Código</label>
+                <input
+                  type="text"
+                  id="codigo"
+                  formControlName="codigo"
+                  [class.error]="hasError('codigo')"
+                  placeholder="Ej: EQ-001"
+                />
+                @if (hasError('codigo')) {
+                  <span class="error-message">{{ getErrorMessage('codigo') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="ano_ingreso">Año de Ingreso</label>
+                <input
+                  type="number"
+                  id="ano_ingreso"
+                  formControlName="ano_ingreso"
+                  [class.error]="hasError('ano_ingreso')"
+                  placeholder="Ej: 2025"
+                  min="1900"
+                  max="2100"
+                />
+                @if (hasError('ano_ingreso')) {
+                  <span class="error-message">{{ getErrorMessage('ano_ingreso') }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Ubicación -->
+          <div class="form-section">
+            <h3 class="section-title">Ubicación</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="ubicacion">Ubicación</label>
+                <input
+                  type="text"
+                  id="ubicacion"
+                  formControlName="ubicacion"
+                  [class.error]="hasError('ubicacion')"
+                  placeholder="Ej: Piso 2, Ala Norte"
+                />
+                @if (hasError('ubicacion')) {
+                  <span class="error-message">{{ getErrorMessage('ubicacion') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="ubicacion_especifica">Ubicación Específica</label>
+                <input
+                  type="text"
+                  id="ubicacion_especifica"
+                  formControlName="ubicacion_especifica"
+                  [class.error]="hasError('ubicacion_especifica')"
+                  placeholder="Ej: Sala 201, Escritorio 5"
+                />
+                @if (hasError('ubicacion_especifica')) {
+                  <span class="error-message">{{ getErrorMessage('ubicacion_especifica') }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Mantenimiento -->
+          <div class="form-section">
+            <h3 class="section-title">Mantenimiento</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="mtto">Requiere Mantenimiento</label>
+                <select id="mtto" formControlName="mtto" [class.error]="hasError('mtto')">
+                  <option [value]="1">Sí</option>
+                  <option [value]="0">No</option>
+                </select>
+                @if (hasError('mtto')) {
+                  <span class="error-message">{{ getErrorMessage('mtto') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="periodicidad">Tipo de Mantenimiento</label>
+                <select id="periodicidad" formControlName="periodicidad" [class.error]="hasError('periodicidad')">
+                  <option value="">Seleccionar...</option>
+                  <option [value]="30">MENSUAL (30 días)</option>
+                  <option [value]="90">TRIMESTRAL (90 días)</option>
+                  <option [value]="120">CUATRIMESTRAL (120 días)</option>
+                  <option [value]="180">SEMESTRAL (180 días)</option>
+                  <option [value]="365">ANUAL (365 días)</option>
+                </select>
+                @if (hasError('periodicidad')) {
+                  <span class="error-message">{{ getErrorMessage('periodicidad') }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- Campos de Fecha Dinámicos según Periodicidad -->
+            @if (fechasMantenimiento.length > 0) {
+              <div class="form-row">
+                @for (fecha of fechasMantenimiento; track fecha) {
+                  <div class="form-group">
+                    <label [for]="'fecha_mantenimiento_' + (fecha + 1)">
+                      {{ getFechaLabel(fecha) }} <span class="required">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      [id]="'fecha_mantenimiento_' + (fecha + 1)"
+                      [formControlName]="'fecha_mantenimiento_' + (fecha + 1)"
+                      [class.error]="hasError('fecha_mantenimiento_' + (fecha + 1))"
+                    />
+                    @if (hasError('fecha_mantenimiento_' + (fecha + 1))) {
+                      <span class="error-message">{{ getErrorMessage('fecha_mantenimiento_' + (fecha + 1)) }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            }
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="dias_mantenimiento">Días de Mantenimiento</label>
+                <input
+                  type="number"
+                  id="dias_mantenimiento"
+                  formControlName="dias_mantenimiento"
+                  [class.error]="hasError('dias_mantenimiento')"
+                  placeholder="Ej: 30"
+                  min="0"
+                />
+                @if (hasError('dias_mantenimiento')) {
+                  <span class="error-message">{{ getErrorMessage('dias_mantenimiento') }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Configuración de Red -->
+          <div class="form-section">
+            <h3 class="section-title">Configuración de Red</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="administrable">Administrable</label>
+                <select id="administrable" formControlName="administrable" [class.error]="hasError('administrable')">
+                  <option [value]="1">Sí</option>
+                  <option [value]="0">No</option>
+                </select>
+                @if (hasError('administrable')) {
+                  <span class="error-message">{{ getErrorMessage('administrable') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="numero_puertos">Número de Puertos</label>
+                <input
+                  type="number"
+                  id="numero_puertos"
+                  formControlName="numero_puertos"
+                  [class.error]="hasError('numero_puertos')"
+                  placeholder="Ej: 24"
+                  min="0"
+                />
+                @if (hasError('numero_puertos')) {
+                  <span class="error-message">{{ getErrorMessage('numero_puertos') }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label for="direccionamiento_Vlan">Direccionamiento VLAN</label>
+                <input
+                  type="text"
+                  id="direccionamiento_Vlan"
+                  formControlName="direccionamiento_Vlan"
+                  [class.error]="hasError('direccionamiento_Vlan')"
+                  placeholder="Ej: 192.168.10.0/24 - VLAN 10"
+                />
+                @if (hasError('direccionamiento_Vlan')) {
+                  <span class="error-message">{{ getErrorMessage('direccionamiento_Vlan') }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Relaciones -->
+          <div class="form-section">
+            <h3 class="section-title">Asignaciones</h3>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="id_hospital_fk">Hospital</label>
+                <select id="id_hospital_fk" formControlName="id_hospital_fk" [class.error]="hasError('id_hospital_fk')">
+                  <option value="">Seleccionar...</option>
+                  @for (hospital of hospitales; track hospital.id) {
+                    <option [value]="hospital.id">{{ hospital.nombre }}</option>
+                  }
+                </select>
+                @if (hasError('id_hospital_fk')) {
+                  <span class="error-message">{{ getErrorMessage('id_hospital_fk') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="id_servicio_fk">Servicio</label>
+                <select id="id_servicio_fk" formControlName="id_servicio_fk" [class.error]="hasError('id_servicio_fk')">
+                  <option value="">Seleccionar...</option>
+                  @for (servicio of servicios; track servicio.id) {
+                    <option [value]="servicio.id">{{ servicio.nombre }}</option>
+                  }
+                </select>
+                @if (hasError('id_servicio_fk')) {
+                  <span class="error-message">{{ getErrorMessage('id_servicio_fk') }}</span>
+                }
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="id_tipo_equipo_fk">Tipo de Equipo</label>
+                <select id="id_tipo_equipo_fk" formControlName="id_tipo_equipo_fk" [class.error]="hasError('id_tipo_equipo_fk')">
+                  <option value="">Seleccionar...</option>
+                  @for (tipoEquipo of tiposEquipo; track tipoEquipo.id) {
+                    <option [value]="tipoEquipo.id">{{ tipoEquipo.nombre }}</option>
+                  }
+                </select>
+                @if (hasError('id_tipo_equipo_fk')) {
+                  <span class="error-message">{{ getErrorMessage('id_tipo_equipo_fk') }}</span>
+                }
+              </div>
+
+              <div class="form-group">
+                <label for="id_usuario_fk">Usuario Responsable</label>
+                <select id="id_usuario_fk" formControlName="id_usuario_fk" [class.error]="hasError('id_usuario_fk')">
+                  <option value="">Seleccionar...</option>
+                  @for (usuario of usuarios; track usuario.id) {
+                    <option [value]="usuario.id">{{ usuario.nombre }}</option>
+                  }
+                </select>
+                @if (hasError('id_usuario_fk')) {
+                  <span class="error-message">{{ getErrorMessage('id_usuario_fk') }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Hoja de Vida -->
+          <div class="form-section">
+            <h3 class="section-title collapsible" (click)="toggleHojaVida()">
+              Hoja de Vida del Equipo
+              <span class="toggle-icon">{{ hojaVidaExpanded ? '▼' : '▶' }}</span>
+            </h3>
+
+            @if (hojaVidaExpanded) {
+              <!-- Especificaciones Técnicas -->
+              <div class="subsection">
+                <h4 class="subsection-title">Especificaciones Técnicas</h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="procesador">Procesador</label>
+                    <input
+                      type="text"
+                      id="procesador"
+                      formControlName="procesador"
+                      [class.error]="hasError('procesador')"
+                      placeholder="Ej: Intel Core i7-10700"
+                    />
+                    @if (hasError('procesador')) {
+                      <span class="error-message">{{ getErrorMessage('procesador') }}</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label for="ram">Memoria RAM</label>
+                    <input
+                      type="text"
+                      id="ram"
+                      formControlName="ram"
+                      [class.error]="hasError('ram')"
+                      placeholder="Ej: 16 GB DDR4"
+                    />
+                    @if (hasError('ram')) {
+                      <span class="error-message">{{ getErrorMessage('ram') }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="disco_duro">Disco Duro</label>
+                    <input
+                      type="text"
+                      id="disco_duro"
+                      formControlName="disco_duro"
+                      [class.error]="hasError('disco_duro')"
+                      placeholder="Ej: SSD 512 GB"
+                    />
+                    @if (hasError('disco_duro')) {
+                      <span class="error-message">{{ getErrorMessage('disco_duro') }}</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label for="sistema_operativo">Sistema Operativo</label>
+                    <input
+                      type="text"
+                      id="sistema_operativo"
+                      formControlName="sistema_operativo"
+                      [class.error]="hasError('sistema_operativo')"
+                      placeholder="Ej: Windows 11 Pro"
+                    />
+                    @if (hasError('sistema_operativo')) {
+                      <span class="error-message">{{ getErrorMessage('sistema_operativo') }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="office">Office</label>
+                    <input
+                      type="text"
+                      id="office"
+                      formControlName="office"
+                      [class.error]="hasError('office')"
+                      placeholder="Ej: Microsoft Office 2021"
+                    />
+                    @if (hasError('office')) {
+                      <span class="error-message">{{ getErrorMessage('office') }}</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label for="tonner">Tóner</label>
+                    <input
+                      type="text"
+                      id="tonner"
+                      formControlName="tonner"
+                      [class.error]="hasError('tonner')"
+                      placeholder="Ej: HP CF230A"
+                    />
+                    @if (hasError('tonner')) {
+                      <span class="error-message">{{ getErrorMessage('tonner') }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Información de Red -->
+              <div class="subsection">
+                <h4 class="subsection-title">Información de Red</h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="ip">Dirección IP</label>
+                    <input
+                      type="text"
+                      id="ip"
+                      formControlName="ip"
+                      [class.error]="hasError('ip')"
+                      placeholder="Ej: 192.168.1.100"
+                    />
+                    @if (hasError('ip')) {
+                      <span class="error-message">{{ getErrorMessage('ip') }}</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label for="mac">Dirección MAC</label>
+                    <input
+                      type="text"
+                      id="mac"
+                      formControlName="mac"
+                      [class.error]="hasError('mac')"
+                      placeholder="Ej: 00:1A:2B:3C:4D:5E"
+                    />
+                    @if (hasError('mac')) {
+                      <span class="error-message">{{ getErrorMessage('mac') }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Información de Compra -->
+              <div class="subsection">
+                <h4 class="subsection-title">Información de Compra</h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="vendedor">Vendedor</label>
+                    <input
+                      type="text"
+                      id="vendedor"
+                      formControlName="vendedor"
+                      [class.error]="hasError('vendedor')"
+                      placeholder="Ej: Tech Solutions S.A."
+                    />
+                    @if (hasError('vendedor')) {
+                      <span class="error-message">{{ getErrorMessage('vendedor') }}</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label for="fecha_compra">Fecha de Compra</label>
+                    <input
+                      type="date"
+                      id="fecha_compra"
+                      formControlName="fecha_compra"
+                      [class.error]="hasError('fecha_compra')"
+                    />
+                    @if (hasError('fecha_compra')) {
+                      <span class="error-message">{{ getErrorMessage('fecha_compra') }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="fecha_instalacion">Fecha de Instalación</label>
+                    <input
+                      type="date"
+                      id="fecha_instalacion"
+                      formControlName="fecha_instalacion"
+                      [class.error]="hasError('fecha_instalacion')"
+                    />
+                    @if (hasError('fecha_instalacion')) {
+                      <span class="error-message">{{ getErrorMessage('fecha_instalacion') }}</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label for="costo_compra">Costo de Compra</label>
+                    <input
+                      type="number"
+                      id="costo_compra"
+                      formControlName="costo_compra"
+                      [class.error]="hasError('costo_compra')"
+                      placeholder="Ej: 2500000"
+                      min="0"
+                    />
+                    @if (hasError('costo_compra')) {
+                      <span class="error-message">{{ getErrorMessage('costo_compra') }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="contrato">Número de Contrato</label>
+                    <input
+                      type="text"
+                      id="contrato"
+                      formControlName="contrato"
+                      [class.error]="hasError('contrato')"
+                      placeholder="Ej: CTR-2025-001"
+                    />
+                    @if (hasError('contrato')) {
+                      <span class="error-message">{{ getErrorMessage('contrato') }}</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label for="tipo_uso">Tipo de Uso</label>
+                    <input
+                      type="text"
+                      id="tipo_uso"
+                      formControlName="tipo_uso"
+                      [class.error]="hasError('tipo_uso')"
+                      placeholder="Ej: Administrativo, Médico"
+                    />
+                    @if (hasError('tipo_uso')) {
+                      <span class="error-message">{{ getErrorMessage('tipo_uso') }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tipo de Adquisición -->
+              <div class="subsection">
+                <h4 class="subsection-title">Tipo de Adquisición</h4>
+
+                <div class="form-row">
+                  <div class="form-group checkbox-group">
+                    <label>
+                      <input
+                        type="checkbox"
+                        formControlName="compraddirecta"
+                      />
+                      <span>Compra Directa</span>
+                    </label>
+                  </div>
+
+                  <div class="form-group checkbox-group">
+                    <label>
+                      <input
+                        type="checkbox"
+                        formControlName="convenio"
+                      />
+                      <span>Convenio</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group checkbox-group">
+                    <label>
+                      <input
+                        type="checkbox"
+                        formControlName="donado"
+                      />
+                      <span>Donado</span>
+                    </label>
+                  </div>
+
+                  <div class="form-group checkbox-group">
+                    <label>
+                      <input
+                        type="checkbox"
+                        formControlName="comodato"
+                      />
+                      <span>Comodato</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Usuario y Observaciones -->
+              <div class="subsection">
+                <h4 class="subsection-title">Información Adicional</h4>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="nombre_usuario">Nombre de Usuario (Sistema)</label>
+                    <input
+                      type="text"
+                      id="nombre_usuario"
+                      formControlName="nombre_usuario"
+                      [class.error]="hasError('nombre_usuario')"
+                      placeholder="Ej: admin, jperez"
+                    />
+                    @if (hasError('nombre_usuario')) {
+                      <span class="error-message">{{ getErrorMessage('nombre_usuario') }}</span>
+                    }
+                  </div>
+
+                  <div class="form-group">
+                    <label for="foto">URL de Foto</label>
+                    <input
+                      type="text"
+                      id="foto"
+                      formControlName="foto"
+                      [class.error]="hasError('foto')"
+                      placeholder="Ej: /assets/equipos/foto.jpg"
+                    />
+                    @if (hasError('foto')) {
+                      <span class="error-message">{{ getErrorMessage('foto') }}</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group full-width">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea
+                      id="observaciones"
+                      formControlName="observaciones"
+                      [class.error]="hasError('observaciones')"
+                      placeholder="Observaciones adicionales sobre el equipo..."
+                      rows="4"
+                    ></textarea>
+                    @if (hasError('observaciones')) {
+                      <span class="error-message">{{ getErrorMessage('observaciones') }}</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="close()" type="button" [disabled]="isSubmitting">
+          Cancelar
+        </button>
+        <button class="btn btn-primary" (click)="save()" type="button" [disabled]="isSubmitting">
+          @if (isSubmitting) {
+            <span class="spinner-small">⏳</span>
+            <span>Guardando...</span>
+          } @else {
+            <span>💾</span>
+            <span>Guardar</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
