@@ -5,6 +5,7 @@
       <div class="welcome-text">
         <div class="welcome-header">
           <img src="img/logo-husrt-1024x320.png" alt="Hospital San Rafael" class="welcome-logo">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
           <div class="welcome-info">
             <h1 class="welcome-greeting">{{ greeting }}, {{ userName }}</h1>
             <p class="welcome-subtitle">Bienvenido al Sistema de Gestión - Hospital San Rafael</p>
@@ -38,11 +39,16 @@
           <span class="header-icon"></span>
           Actividad Reciente
         </h2>
+       
       </div>
       <div class="activity-list">
         @for (activity of recentActivity; track activity.description) {
           <div class="activity-item">
-            <div class="activity-icon">{{ activity.icon }}</div>
+            <div class="activity-icon" 
+                 [style.background-color]="activity.color ? activity.color + '15' : 'rgba(102, 126, 234, 0.1)'">
+              <i [ngClass]="activity.icon" 
+                 [style.color]="activity.color || '#667eea'"></i>
+            </div>
             <div class="activity-content">
               <p class="activity-description">{{ activity.description }}</p>
               <p class="activity-time">{{ activity.time }}</p>
@@ -63,10 +69,14 @@
       <div class="quick-actions-grid">
         @for (access of quickAccess; track access.route) {
           <a [routerLink]="access.route" class="quick-access-card" [style.border-left-color]="access.color">
-            <div class="access-icon" [style.background-color]="access.color + '20'">{{ access.icon }}</div>
+            <div class="access-icon" [style.background-color]="access.color + '20'">
+              <i [ngClass]="access.iconClass"></i>
+            </div>
             <div class="access-content">
               <h3 class="access-title">{{ access.title }}</h3>
-              <span class="access-arrow">→</span>
+              <span class="access-arrow">
+                <i class="fas fa-arrow-right"></i>
+              </span>
             </div>
           </a>
         }
@@ -74,3 +84,4 @@
     </div>
   </div>
 </div>
+

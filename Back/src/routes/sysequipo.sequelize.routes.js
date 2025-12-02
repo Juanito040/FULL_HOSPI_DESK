@@ -8,16 +8,21 @@ const {
     updateSysEquipo,
     patchSysEquipo,
     deleteSysEquipo,
+    hardDeleteSysEquipo,
     reactivarSysEquipo,
     darDeBajaSysEquipo,
     getEstadisticasSysEquipos,
     getSysEquiposPorServicio,
-    getSysEquiposPorTipo
+    getSysEquiposPorTipo,
+    getEquiposEnBodega,
+    getEquiposDadosDeBaja
 } = require('../controllers/sysequipo.sequelize.controller');
 const { sysEquipoValidator } = require('../middlewares/validators/sysequipo.validator');
 
 // Rutas de consulta
 router.get('/stats', getEstadisticasSysEquipos);
+router.get('/bodega', getEquiposEnBodega);
+router.get('/dados-baja', getEquiposDadosDeBaja);
 router.get('/search', searchSysEquipos);
 router.get('/servicio/:servicioId', getSysEquiposPorServicio);
 router.get('/tipo/:tipoId', getSysEquiposPorTipo);
@@ -33,5 +38,6 @@ router.delete('/:id', deleteSysEquipo);
 // Gestión de estado
 router.patch('/:id/reactivar', reactivarSysEquipo);
 router.post('/:id/baja', darDeBajaSysEquipo);
+router.post('/:id/hard-delete', hardDeleteSysEquipo);
 
 module.exports = router;

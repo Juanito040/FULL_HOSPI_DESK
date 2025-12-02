@@ -1,0 +1,30 @@
+<div class="inventario-container">
+  <!-- Encabezado con pestañas -->
+  <div class="header">
+    <h1>Inventario de Sistemas</h1>
+    <div class="tabs">
+      <button
+        class="tab-button"
+        [class.active]="activeTab === 'equipos'"
+        (click)="setActiveTab('equipos')">
+         Equipos
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="activeTab === 'hojas-vida'"
+        (click)="setActiveTab('hojas-vida')">
+         Hojas de Vida
+      </button>
+    </div>
+  </div>
+ <br> 
+  <!-- Contenido de las pestañas -->
+  <div class="tab-content">
+    <div *ngIf="activeTab === 'equipos'" class="tab-panel">
+      <app-equipos></app-equipos>
+    </div>
+    <div *ngIf="activeTab === 'hojas-vida'" class="tab-panel">
+      <app-hojas-vida></app-hojas-vida>
+    </div>
+  </div>
+</div>

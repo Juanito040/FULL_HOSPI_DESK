@@ -13,12 +13,14 @@ export const routes: Routes = [
   // Módulo Usuario
   {
     path: 'usuarios',
-    loadComponent: () => import('./pages/usuarios/usuarios.component').then(m => m.UsuariosComponent)
+    loadComponent: () => import('./pages/usuarios-control/usuarios-control.component').then(m => m.UsuariosControlComponent)
   },
   {
     path: 'equipos',
     loadComponent: () => import('./pages/equipos/equipos.component').then(m => m.EquiposComponent)
   },
+  
+  
   // Formatos
   {
     path: 'formatos/hv',
@@ -52,6 +54,10 @@ export const routes: Routes = [
   {
     path: 'backups',
     loadComponent: () => import('./pages/backups/backups.component').then(m => m.BackupsComponent)
+  },
+  {
+    path: 'hojas-vida',
+    loadComponent: () => import('./pages/hojas-vida/hojas-vida.component').then(m => m.HojasVidaComponent)
   },
   {
     path: 'inventario',

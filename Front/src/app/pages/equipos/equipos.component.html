@@ -4,16 +4,47 @@
       <h1>Gestión de Equipos</h1>
       <p class="subtitle">Administra todos los equipos de sistemas del hospital</p>
     </div>
-    <button class="btn btn-primary" (click)="openCreateModal()">
-      <span>➕</span>
-      <span>Nuevo Equipo</span>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="loadEquipos()" title="Refrescar tabla" [disabled]="isLoading">
+        <span></span>
+        <span>Recargar</span>
+      </button>
+      <button class="btn btn-primary" (click)="openCreateModal()">
+        <span></span>
+        <span>Nuevo Equipo</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros de vista -->
+  <div class="view-filters">
+    <button
+      class="view-filter-btn"
+      [class.active]="selectedView === 'all'"
+      (click)="changeView('all')"
+      [disabled]="isLoading">
+       Todos los Equipos
+    </button>
+    <button
+      class="view-filter-btn"
+      [class.active]="selectedView === 'bodega'"
+      (click)="changeView('bodega')"
+      [disabled]="isLoading">
+       En Bodega
+    </button>
+    <button
+      class="view-filter-btn"
+      [class.active]="selectedView === 'baja'"
+      (click)="changeView('baja')"
+      [disabled]="isLoading">
+       Dados de Baja
     </button>
   </div>
 
   <!-- Barra de búsqueda y filtros -->
   <div class="toolbar">
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><i class="fas fa-search"></i></span>
       <input
         type="text"
         placeholder="Buscar por nombre, marca, modelo o ubicación..."
@@ -41,7 +72,7 @@
   <!-- Mensaje de error -->
   @if (error && !isLoading) {
     <div class="error-state">
-      <div class="error-icon">⚠️</div>
+      <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
       <p>{{ error }}</p>
       <button class="btn btn-primary" (click)="loadEquipos()">Reintentar</button>
     </div>
@@ -79,16 +110,16 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <button class="btn-icon" title="Ver detalles" (click)="openDetailModal(equipo)">👁️</button>
-                  <button class="btn-icon" title="Editar" (click)="openEditModal(equipo)">✏️</button>
-                  <button class="btn-icon" title="Eliminar" (click)="confirmDelete(equipo)">🗑️</button>
+                  <button class="btn-icon" title="Ver detalles" (click)="openDetailModal(equipo)"><i class="fas fa-eye"></i></button>
+                  <button class="btn-icon" title="Editar" (click)="openEditModal(equipo)"><i class="fas fa-edit"></i></button>
+                  <button class="btn-icon" title="Eliminar" (click)="confirmDelete(equipo)"><i class="fas fa-trash"></i></button>
                 </div>
               </td>
             </tr>
           } @empty {
             <tr>
               <td colspan="8" class="empty-state">
-                <div class="empty-icon">📦</div>
+                <div class="empty-icon"><i class="fas fa-boxes"></i></div>
                 <p>No se encontraron equipos</p>
               </td>
             </tr>
@@ -114,7 +145,15 @@
   (saved)="onEquipoSaved()"
 ></app-equipo-modal>
 
-<!-- Modal de Confirmación de Eliminación -->
+<!-- Modal de Opciones de Eliminación -->
+<app-delete-options-dialog
+  [isOpen]="isDeleteOptionsDialogOpen"
+  [equipoNombre]="equipoToDeleteWithOptions?.nombre_equipo || ''"
+  (onClose)="closeDeleteOptionsDialog()"
+  (onConfirm)="handleDeleteOptionsConfirm($event)"
+></app-delete-options-dialog>
+
+<!-- Modal de Confirmación de Eliminación (deprecated) -->
 <app-confirm-dialog
   [isOpen]="isConfirmDialogOpen"
   [title]="'Eliminar Equipo'"
@@ -122,7 +161,7 @@
   [confirmText]="'Eliminar'"
   [cancelText]="'Cancelar'"
   [type]="'danger'"
-  [icon]="'🗑️'"
+  [icon]="'fas fa-trash'"
   (confirmed)="deleteEquipo()"
   (cancelled)="closeConfirmDialog()">
 </app-confirm-dialog>

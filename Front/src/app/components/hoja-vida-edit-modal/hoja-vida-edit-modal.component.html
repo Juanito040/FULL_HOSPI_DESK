@@ -1,0 +1,163 @@
+<div *ngIf="isOpen" class="modal-overlay" (click)="close()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <h2>Editar Hoja de Vida</h2>
+        <p class="subtitle" *ngIf="hojaVida?.equipo">
+          {{ hojaVida.equipo.nombre_equipo }} - {{ hojaVida.equipo.marca }} {{ hojaVida.equipo.modelo }}
+        </p>
+      </div>
+      <button class="close-btn" (click)="close()" type="button">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <form [formGroup]="hojaVidaForm" (ngSubmit)="save()">
+      <div class="modal-body">
+        <!-- Especificaciones Técnicas -->
+        <div class="form-section">
+          <h3 class="section-title">Especificaciones Técnicas</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="ip">Dirección IP</label>
+              <input type="text" id="ip" formControlName="ip" placeholder="192.168.1.100">
+            </div>
+
+            <div class="form-group">
+              <label for="mac">Dirección MAC</label>
+              <input type="text" id="mac" formControlName="mac" placeholder="AA:BB:CC:DD:EE:FF">
+            </div>
+
+            <div class="form-group">
+              <label for="procesador">Procesador</label>
+              <input type="text" id="procesador" formControlName="procesador" placeholder="Intel Core i5">
+            </div>
+
+            <div class="form-group">
+              <label for="ram">RAM</label>
+              <input type="text" id="ram" formControlName="ram" placeholder="8GB DDR4">
+            </div>
+
+            <div class="form-group">
+              <label for="disco_duro">Disco Duro</label>
+              <input type="text" id="disco_duro" formControlName="disco_duro" placeholder="500GB SSD">
+            </div>
+
+            <div class="form-group">
+              <label for="sistema_operativo">Sistema Operativo</label>
+              <input type="text" id="sistema_operativo" formControlName="sistema_operativo" placeholder="Windows 10 Pro">
+            </div>
+
+            <div class="form-group">
+              <label for="office">Office</label>
+              <input type="text" id="office" formControlName="office" placeholder="Office 2019">
+            </div>
+
+            <div class="form-group">
+              <label for="tonner">Toner</label>
+              <input type="text" id="tonner" formControlName="tonner" placeholder="HP 85A">
+            </div>
+          </div>
+        </div>
+
+        <!-- Información de Usuario y Proveedor -->
+        <div class="form-section">
+          <h3 class="section-title">Usuario y Proveedor</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="nombre_usuario">Nombre de Usuario</label>
+              <input type="text" id="nombre_usuario" formControlName="nombre_usuario" placeholder="Juan Pérez">
+            </div>
+
+            <div class="form-group">
+              <label for="vendedor">Vendedor</label>
+              <input type="text" id="vendedor" formControlName="vendedor" placeholder="Nombre del vendedor">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="tipo_uso">Tipo de Uso</label>
+              <input type="text" id="tipo_uso" formControlName="tipo_uso" placeholder="Administrativo, Clínico, etc.">
+            </div>
+          </div>
+        </div>
+
+        <!-- Fechas y Costos -->
+        <div class="form-section">
+          <h3 class="section-title">Fechas y Costos</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="fecha_compra">Fecha de Compra</label>
+              <input type="date" id="fecha_compra" formControlName="fecha_compra">
+            </div>
+
+            <div class="form-group">
+              <label for="fecha_instalacion">Fecha de Instalación</label>
+              <input type="date" id="fecha_instalacion" formControlName="fecha_instalacion">
+            </div>
+
+            <div class="form-group">
+              <label for="costo_compra">Costo de Compra</label>
+              <input type="number" id="costo_compra" formControlName="costo_compra" placeholder="0" min="0">
+            </div>
+
+            <div class="form-group">
+              <label for="contrato">Contrato</label>
+              <input type="text" id="contrato" formControlName="contrato" placeholder="Número de contrato">
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipo de Adquisición -->
+        <div class="form-section">
+          <h3 class="section-title">Tipo de Adquisición</h3>
+          <div class="checkbox-grid">
+            <div class="form-check">
+              <input type="checkbox" id="compraddirecta" formControlName="compraddirecta">
+              <label for="compraddirecta">Compra Directa</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="convenio" formControlName="convenio">
+              <label for="convenio">Convenio</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="donado" formControlName="donado">
+              <label for="donado">Donado</label>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="comodato" formControlName="comodato">
+              <label for="comodato">Comodato</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="form-section">
+          <h3 class="section-title">Observaciones</h3>
+          <div class="form-group full-width">
+            <label for="observaciones">Observaciones</label>
+            <textarea id="observaciones" formControlName="observaciones" rows="4" placeholder="Notas adicionales sobre el equipo..."></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="foto">URL de Foto</label>
+            <input type="text" id="foto" formControlName="foto" placeholder="https://example.com/foto.jpg">
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()" [disabled]="isSubmitting">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="isSubmitting">
+          <span *ngIf="!isSubmitting">Guardar Cambios</span>
+          <span *ngIf="isSubmitting">Guardando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

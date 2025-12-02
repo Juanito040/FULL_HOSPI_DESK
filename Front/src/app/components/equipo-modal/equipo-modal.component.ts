@@ -1,8 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EquiposService, Equipo } from '../../services/equipos.service';
 import { HojasVidaService, HojaVida } from '../../services/hojas-vida.service';
+import { UsuariosService } from '../../services/usuarios.service';
+import { ActividadService } from '../../services/actividad.service';
+import { NotificationService } from '../../services/notification.service';
 import { forkJoin } from 'rxjs';
 
 interface LookupItem {
@@ -17,7 +20,7 @@ interface LookupItem {
   templateUrl: './equipo-modal.component.html',
   styleUrls: ['./equipo-modal.component.css']
 })
-export class EquipoModalComponent implements OnInit {
+export class EquipoModalComponent implements OnInit, OnChanges {
   @Input() isOpen: boolean = false;
   @Input() equipo: Equipo | null = null;
   @Output() closed = new EventEmitter<void>();
@@ -42,7 +45,10 @@ export class EquipoModalComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private equiposService: EquiposService,
-    private hojasVidaService: HojasVidaService
+    private hojasVidaService: HojasVidaService,
+    private usuariosService: UsuariosService,
+    private actividadService: ActividadService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit() {
@@ -51,8 +57,8 @@ export class EquipoModalComponent implements OnInit {
     this.setupPeriodicidadListener();
   }
 
-  ngOnChanges() {
-    if (this.isOpen && this.equipoForm) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['isOpen'] && this.isOpen && this.equipoForm) {
       if (this.equipo) {
         // Modo edición
         this.equipoForm.patchValue(this.equipo);
@@ -97,11 +103,27 @@ export class EquipoModalComponent implements OnInit {
       { id: 6, nombre: 'Impresora' }
     ];
 
-    this.usuarios = [
-      { id: 1, nombre: 'Administrador del Sistema' },
-      { id: 2, nombre: 'Técnico de Soporte' },
-      { id: 3, nombre: 'Coordinador TI' }
-    ];
+    // Cargar usuarios reales desde la API
+    this.usuariosService.getUsuariosActivos().subscribe({
+      next: (response) => {
+        if (response.success) {
+          const usuarios = Array.isArray(response.data) ? response.data : [response.data];
+          this.usuarios = usuarios.map(u => ({
+            id: u.id,
+            nombre: `${u.nombres} ${u.apellidos}`
+          }));
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios:', err);
+        // Mantener usuarios por defecto en caso de error
+        this.usuarios = [
+          { id: 1, nombre: 'Administrador del Sistema' },
+          { id: 2, nombre: 'Técnico de Soporte' },
+          { id: 3, nombre: 'Coordinador TI' }
+        ];
+      }
+    });
   }
 
   /**
@@ -355,94 +377,148 @@ export class EquipoModalComponent implements OnInit {
                 if (hojaResponse.success && hojaResponse.data) {
                   const hojaVidaExistente = Array.isArray(hojaResponse.data) ? hojaResponse.data[0] : hojaResponse.data;
                   // Actualizar hoja de vida existente
-                  this.hojasVidaService.updateHojaVida(hojaVidaExistente.id_syshoja_vida!, hojaVidaData).subscribe({
+                  this.hojasVidaService.updateHojaVida(hojaVidaExistente.id_syshoja_vida!, this.limpiarHojaVida(hojaVidaData)).subscribe({
                     next: () => {
                       this.isSubmitting = false;
+                      // Registrar actividad
+                      this.actividadService.equipoActualizado(formData.nombre_equipo);
+                      this.notificationService.success(`Equipo "${formData.nombre_equipo}" actualizado exitosamente`);
                       this.saved.emit();
                       this.close();
                     },
                     error: (err) => {
                       console.error('Error al actualizar hoja de vida:', err);
-                      this.errorMessage = 'Equipo actualizado, pero hubo un error al actualizar la hoja de vida';
                       this.isSubmitting = false;
+                      this.notificationService.warning('Equipo actualizado, pero hubo un error al actualizar la hoja de vida');
                     }
                   });
                 } else {
                   // Crear nueva hoja de vida
-                  this.hojasVidaService.createHojaVida(hojaVidaData).subscribe({
+                  this.hojasVidaService.createHojaVida(this.limpiarHojaVida(hojaVidaData)).subscribe({
                     next: () => {
                       this.isSubmitting = false;
+                      // Registrar actividad
+                      this.actividadService.equipoActualizado(formData.nombre_equipo);
+                      this.notificationService.success(`Equipo "${formData.nombre_equipo}" actualizado exitosamente`);
                       this.saved.emit();
                       this.close();
                     },
                     error: (err) => {
                       console.error('Error al crear hoja de vida:', err);
-                      this.errorMessage = 'Equipo actualizado, pero hubo un error al crear la hoja de vida';
                       this.isSubmitting = false;
+                      this.notificationService.warning('Equipo actualizado, pero hubo un error al crear la hoja de vida');
                     }
                   });
                 }
               },
               error: () => {
                 // Si no existe, crear nueva
-                this.hojasVidaService.createHojaVida(hojaVidaData).subscribe({
+                this.hojasVidaService.createHojaVida(this.limpiarHojaVida(hojaVidaData)).subscribe({
                   next: () => {
                     this.isSubmitting = false;
+                    // Registrar actividad
+                    this.actividadService.equipoActualizado(formData.nombre_equipo);
+                    this.notificationService.success(`Equipo "${formData.nombre_equipo}" actualizado exitosamente`);
                     this.saved.emit();
                     this.close();
                   },
                   error: (err) => {
                     console.error('Error al crear hoja de vida:', err);
-                    this.errorMessage = 'Equipo actualizado, pero hubo un error al crear la hoja de vida';
                     this.isSubmitting = false;
+                    this.notificationService.warning('Equipo actualizado, pero hubo un error al crear la hoja de vida');
                   }
                 });
               }
             });
           } else {
-            this.errorMessage = response.message || 'Error al actualizar el equipo';
             this.isSubmitting = false;
+            this.notificationService.error(response.message || 'Error al actualizar el equipo');
           }
         },
         error: (err) => {
           console.error('Error al actualizar equipo:', err);
-          this.errorMessage = 'Error al conectar con el servidor';
           this.isSubmitting = false;
+          const errorMsg = err.error?.message || 'Error al conectar con el servidor';
+          this.notificationService.error(errorMsg);
         }
       });
     } else {
-      // Crear nuevo equipo y su hoja de vida
-      this.equiposService.createEquipo(equipoData).subscribe({
+      // Crear nuevo equipo con su hoja de vida en una sola transacción
+      const equipoConHojaVida = {
+        ...equipoData,
+        hojaVida: this.limpiarHojaVida(hojaVidaData)
+      };
+
+      this.equiposService.createEquipo(equipoConHojaVida).subscribe({
         next: (response) => {
           if (response.success) {
             const equipoCreado = Array.isArray(response.data) ? response.data[0] : response.data;
-
-            // Crear hoja de vida asociada al equipo
-            hojaVidaData.id_sysequipo_fk = equipoCreado.id_sysequipo;
-
-            this.hojasVidaService.createHojaVida(hojaVidaData).subscribe({
-              next: () => {
-                this.isSubmitting = false;
-                this.saved.emit();
-                this.close();
-              },
-              error: (err) => {
-                console.error('Error al crear hoja de vida:', err);
-                this.errorMessage = 'Equipo creado, pero hubo un error al crear la hoja de vida';
-                this.isSubmitting = false;
-              }
-            });
-          } else {
-            this.errorMessage = response.message || 'Error al crear el equipo';
             this.isSubmitting = false;
+
+            // Registrar actividades
+            this.actividadService.equipoCreado(equipoCreado.nombre_equipo, equipoCreado.marca, equipoCreado.modelo);
+            this.actividadService.hojaVidaCreada(equipoCreado.nombre_equipo);
+
+            // Mostrar notificación de éxito
+            this.notificationService.success(
+              `Equipo "${equipoCreado.nombre_equipo}" creado exitosamente con su hoja de vida`
+            );
+
+            this.saved.emit();
+            this.close();
+          } else {
+            this.isSubmitting = false;
+            this.notificationService.error(
+              response.message || 'Error al crear el equipo. Por favor, intente nuevamente.'
+            );
           }
         },
         error: (err) => {
           console.error('Error al crear equipo:', err);
-          this.errorMessage = 'Error al conectar con el servidor';
           this.isSubmitting = false;
+
+          // Mostrar mensaje de error específico o genérico
+          const errorMsg = err.error?.message || err.error?.errors?.[0]?.msg || 'Error al conectar con el servidor';
+          this.notificationService.error(errorMsg);
         }
       });
     }
+  }
+
+  /**
+   * Limpia la hoja de vida eliminando campos vacíos y asegurando tipos correctos
+   */
+  private limpiarHojaVida(hojaVida: any): any {
+    const limpia: any = {};
+
+    // Solo incluir campos que tengan valores no vacíos
+    Object.keys(hojaVida).forEach(key => {
+      const valor = hojaVida[key];
+
+      // Omitir valores undefined, null, o strings vacíos
+      if (valor === undefined || valor === null || valor === '') {
+        return;
+      }
+
+      // Para booleanos, asegurar que sean booleanos
+      if (key === 'compraddirecta' || key === 'convenio' || key === 'donado' || key === 'comodato') {
+        limpia[key] = Boolean(valor);
+        return;
+      }
+
+      // Para costo_compra, asegurar que sea número entero
+      if (key === 'costo_compra') {
+        const num = parseInt(valor, 10);
+        if (!isNaN(num) && num >= 0) {
+          limpia[key] = num;
+        }
+        return;
+      }
+
+      // Para el resto de campos, incluir si no están vacíos
+      limpia[key] = valor;
+    });
+
+    return limpia;
   }
 }

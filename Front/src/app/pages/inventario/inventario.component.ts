@@ -1,16 +1,19 @@
 import { Component } from '@angular/core';
-import { EnDesarrolloComponent } from '../../components/en-desarrollo/en-desarrollo.component';
+import { CommonModule } from '@angular/common';
+import { EquiposComponent } from '../equipos/equipos.component';
+import { HojasVidaComponent } from '../hojas-vida/hojas-vida.component';
 
 @Component({
   selector: 'app-inventario',
   standalone: true,
-  imports: [EnDesarrolloComponent],
-  template: `
-    <app-en-desarrollo
-      titulo="Inventario"
-      descripcion="Gestión completa del inventario de equipos y recursos. Próximamente disponible."
-      icono="📦">
-    </app-en-desarrollo>
-  `
+  imports: [CommonModule, EquiposComponent, HojasVidaComponent],
+  templateUrl: './inventario.component.html',
+  styleUrls: ['./inventario.component.css']
 })
-export class InventarioComponent {}
+export class InventarioComponent {
+  activeTab: 'equipos' | 'hojas-vida' = 'equipos';
+
+  setActiveTab(tab: 'equipos' | 'hojas-vida') {
+    this.activeTab = tab;
+  }
+}

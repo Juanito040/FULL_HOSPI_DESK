@@ -48,6 +48,12 @@ const getAllSysEquipos = async (req, res, next) => {
             ];
         }
 
+        // Excluir equipos en bodega y dados de baja de la lista principal
+        where[Op.and] = [
+            { [Op.or]: [{ ubicacion: { [Op.ne]: 'Bodega' } }, { ubicacion: null }] },
+            { [Op.or]: [{ estado_baja: { [Op.ne]: 1 } }, { estado_baja: null }] }
+        ];
+
         // Calcular offset
         const offset = (parseInt(page) - 1) * parseInt(limit);
 
@@ -125,6 +131,10 @@ const getSysEquipoById = async (req, res, next) => {
                     model: db.Usuario,
                     as: 'usuario',
                     attributes: ['id', 'nombres', 'apellidos', 'email']
+                },
+                {
+                    model: db.SysHojaVida,
+                    as: 'hojaVida'
                 }
             ]
         });
@@ -200,6 +210,8 @@ const searchSysEquipos = async (req, res, next) => {
 
 // Crear nuevo equipo
 const createSysEquipo = async (req, res, next) => {
+    const transaction = await db.sequelize.transaction();
+
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -209,43 +221,154 @@ const createSysEquipo = async (req, res, next) => {
             });
         }
 
-        const equipo = await db.SysEquipo.create(req.body);
+        // Extraer datos del equipo y hoja de vida del body
+        const { hojaVida, ...equipoData } = req.body;
+
+        // Crear el equipo dentro de una transacción
+        const equipo = await db.SysEquipo.create(equipoData, { transaction });
+
+        // Si se proporcionan datos de hoja de vida, crearla automáticamente
+        let hojaVidaCreada = null;
+        if (hojaVida && Object.keys(hojaVida).length > 0) {
+            hojaVidaCreada = await db.SysHojaVida.create({
+                ...hojaVida,
+                id_sysequipo_fk: equipo.id_sysequipo
+            }, { transaction });
+        }
+
+        // Confirmar la transacción
+        await transaction.commit();
+
+        // Obtener el equipo completo con la hoja de vida incluida
+        const equipoCompleto = await db.SysEquipo.findByPk(equipo.id_sysequipo, {
+            include: [
+                {
+                    model: db.Hospital,
+                    as: 'hospital',
+                    attributes: ['id_hospital', 'nombre_hospital', 'ciudad']
+                },
+                {
+                    model: db.Servicio,
+                    as: 'servicio',
+                    attributes: ['id', 'nombres', 'ubicacion']
+                },
+                {
+                    model: db.TipoEquipo,
+                    as: 'tipoEquipo',
+                    attributes: ['id', 'nombres', 'actividad']
+                },
+                {
+                    model: db.Usuario,
+                    as: 'usuario',
+                    attributes: ['id', 'nombres', 'apellidos', 'email']
+                },
+                {
+                    model: db.SysHojaVida,
+                    as: 'hojaVida'
+                }
+            ]
+        });
 
         res.status(201).json({
             success: true,
-            message: 'Equipo de sistemas creado exitosamente',
-            data: equipo
+            message: hojaVidaCreada
+                ? 'Equipo de sistemas y hoja de vida creados exitosamente'
+                : 'Equipo de sistemas creado exitosamente',
+            data: equipoCompleto
         });
     } catch (error) {
+        // Revertir la transacción en caso de error
+        await transaction.rollback();
         next(error);
     }
 };
 
 // Actualizar equipo completamente
 const updateSysEquipo = async (req, res, next) => {
+    const transaction = await db.sequelize.transaction();
+
     try {
         const { id } = req.params;
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
+            await transaction.rollback();
             return res.status(400).json({
                 success: false,
                 errors: errors.array()
             });
         }
 
-        const [affectedRows] = await db.SysEquipo.update(req.body, {
-            where: { id_sys_equipo: id }
+        // Extraer datos del equipo y hoja de vida del body
+        const { hojaVida, ...equipoData } = req.body;
+
+        // Actualizar el equipo
+        const [affectedRows] = await db.SysEquipo.update(equipoData, {
+            where: { id_sysequipo: id },
+            transaction
         });
 
         if (affectedRows === 0) {
+            await transaction.rollback();
             return res.status(404).json({
                 success: false,
                 message: 'Equipo de sistemas no encontrado'
             });
         }
 
-        const equipo = await db.SysEquipo.findByPk(id);
+        // Si se proporcionan datos de hoja de vida, actualizarla o crearla
+        if (hojaVida && Object.keys(hojaVida).length > 0) {
+            const hojaVidaExistente = await db.SysHojaVida.findOne({
+                where: { id_sysequipo_fk: id }
+            });
+
+            if (hojaVidaExistente) {
+                // Actualizar hoja de vida existente
+                await db.SysHojaVida.update(hojaVida, {
+                    where: { id_sysequipo_fk: id },
+                    transaction
+                });
+            } else {
+                // Crear nueva hoja de vida
+                await db.SysHojaVida.create({
+                    ...hojaVida,
+                    id_sysequipo_fk: id
+                }, { transaction });
+            }
+        }
+
+        // Confirmar la transacción
+        await transaction.commit();
+
+        // Obtener el equipo actualizado con todas las relaciones
+        const equipo = await db.SysEquipo.findByPk(id, {
+            include: [
+                {
+                    model: db.Hospital,
+                    as: 'hospital',
+                    attributes: ['id_hospital', 'nombre_hospital', 'ciudad']
+                },
+                {
+                    model: db.Servicio,
+                    as: 'servicio',
+                    attributes: ['id', 'nombres', 'ubicacion']
+                },
+                {
+                    model: db.TipoEquipo,
+                    as: 'tipoEquipo',
+                    attributes: ['id', 'nombres', 'actividad']
+                },
+                {
+                    model: db.Usuario,
+                    as: 'usuario',
+                    attributes: ['id', 'nombres', 'apellidos', 'email']
+                },
+                {
+                    model: db.SysHojaVida,
+                    as: 'hojaVida'
+                }
+            ]
+        });
 
         res.json({
             success: true,
@@ -253,27 +376,90 @@ const updateSysEquipo = async (req, res, next) => {
             data: equipo
         });
     } catch (error) {
+        await transaction.rollback();
         next(error);
     }
 };
 
 // Actualización parcial
 const patchSysEquipo = async (req, res, next) => {
+    const transaction = await db.sequelize.transaction();
+
     try {
         const { id } = req.params;
 
-        const [affectedRows] = await db.SysEquipo.update(req.body, {
-            where: { id_sys_equipo: id }
-        });
+        // Extraer datos del equipo y hoja de vida del body
+        const { hojaVida, ...equipoData } = req.body;
 
-        if (affectedRows === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Equipo de sistemas no encontrado'
+        // Actualizar el equipo si hay datos
+        if (Object.keys(equipoData).length > 0) {
+            const [affectedRows] = await db.SysEquipo.update(equipoData, {
+                where: { id_sysequipo: id },
+                transaction
             });
+
+            if (affectedRows === 0) {
+                await transaction.rollback();
+                return res.status(404).json({
+                    success: false,
+                    message: 'Equipo de sistemas no encontrado'
+                });
+            }
         }
 
-        const equipo = await db.SysEquipo.findByPk(id);
+        // Si se proporcionan datos de hoja de vida, actualizarla o crearla
+        if (hojaVida && Object.keys(hojaVida).length > 0) {
+            const hojaVidaExistente = await db.SysHojaVida.findOne({
+                where: { id_sysequipo_fk: id }
+            });
+
+            if (hojaVidaExistente) {
+                // Actualizar hoja de vida existente
+                await db.SysHojaVida.update(hojaVida, {
+                    where: { id_sysequipo_fk: id },
+                    transaction
+                });
+            } else {
+                // Crear nueva hoja de vida
+                await db.SysHojaVida.create({
+                    ...hojaVida,
+                    id_sysequipo_fk: id
+                }, { transaction });
+            }
+        }
+
+        // Confirmar la transacción
+        await transaction.commit();
+
+        // Obtener el equipo actualizado con todas las relaciones
+        const equipo = await db.SysEquipo.findByPk(id, {
+            include: [
+                {
+                    model: db.Hospital,
+                    as: 'hospital',
+                    attributes: ['id_hospital', 'nombre_hospital', 'ciudad']
+                },
+                {
+                    model: db.Servicio,
+                    as: 'servicio',
+                    attributes: ['id', 'nombres', 'ubicacion']
+                },
+                {
+                    model: db.TipoEquipo,
+                    as: 'tipoEquipo',
+                    attributes: ['id', 'nombres', 'actividad']
+                },
+                {
+                    model: db.Usuario,
+                    as: 'usuario',
+                    attributes: ['id', 'nombres', 'apellidos', 'email']
+                },
+                {
+                    model: db.SysHojaVida,
+                    as: 'hojaVida'
+                }
+            ]
+        });
 
         res.json({
             success: true,
@@ -281,32 +467,113 @@ const patchSysEquipo = async (req, res, next) => {
             data: equipo
         });
     } catch (error) {
+        await transaction.rollback();
         next(error);
     }
 };
 
-// Desactivar equipo (soft delete)
+// Enviar equipo a bodega (soft delete)
 const deleteSysEquipo = async (req, res, next) => {
     try {
         const { id } = req.params;
+        const { motivo } = req.body;
 
-        const [affectedRows] = await db.SysEquipo.update(
-            { activo: false },
-            { where: { id_sys_equipo: id } }
-        );
+        const equipo = await db.SysEquipo.findByPk(id);
 
-        if (affectedRows === 0) {
+        if (!equipo) {
             return res.status(404).json({
                 success: false,
                 message: 'Equipo de sistemas no encontrado'
             });
         }
 
+        await db.SysEquipo.update(
+            {
+                activo: 0,
+                ubicacion: 'Bodega',
+                ubicacion_especifica: motivo || 'Enviado a bodega'
+            },
+            { where: { id_sysequipo: id } }
+        );
+
+        const equipoActualizado = await db.SysEquipo.findByPk(id);
+
         res.json({
             success: true,
-            message: 'Equipo de sistemas desactivado exitosamente'
+            message: 'Equipo enviado a bodega exitosamente',
+            data: equipoActualizado
         });
     } catch (error) {
+        next(error);
+    }
+};
+
+// Dar de baja permanente (hard delete modificado)
+const hardDeleteSysEquipo = async (req, res, next) => {
+    const transaction = await db.sequelize.transaction();
+
+    try {
+        const { id } = req.params;
+        const { justificacion_baja, accesorios_reutilizables, id_usuario } = req.body;
+
+        const equipo = await db.SysEquipo.findByPk(id);
+
+        if (!equipo) {
+            await transaction.rollback();
+            return res.status(404).json({
+                success: false,
+                message: 'Equipo de sistemas no encontrado'
+            });
+        }
+
+        const nombreEquipo = equipo.nombre_equipo;
+
+        // Marcar como dado de baja
+        await db.SysEquipo.update(
+            {
+                activo: 0,
+                estado_baja: 1
+            },
+            {
+                where: { id_sysequipo: id },
+                transaction
+            }
+        );
+
+        // Crear registro de baja
+        await db.SysBaja.create({
+            fecha_baja: new Date(),
+            justificacion_baja: justificacion_baja || 'No especificada',
+            accesorios_reutilizables: accesorios_reutilizables || '',
+            id_sysequipo_fk: id,
+            id_sysusuario_fk: id_usuario || null
+        }, { transaction });
+
+        await transaction.commit();
+
+        const equipoActualizado = await db.SysEquipo.findByPk(id, {
+            include: [
+                {
+                    model: db.SysBaja,
+                    as: 'baja',
+                    include: [
+                        {
+                            model: db.Usuario,
+                            as: 'usuario',
+                            attributes: ['id', 'nombres', 'apellidos']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        res.json({
+            success: true,
+            message: `Equipo "${nombreEquipo}" dado de baja permanentemente`,
+            data: equipoActualizado
+        });
+    } catch (error) {
+        await transaction.rollback();
         next(error);
     }
 };
@@ -318,7 +585,7 @@ const reactivarSysEquipo = async (req, res, next) => {
 
         const [affectedRows] = await db.SysEquipo.update(
             { activo: true },
-            { where: { id_sys_equipo: id } }
+            { where: { id_sysequipo: id } }
         );
 
         if (affectedRows === 0) {
@@ -353,7 +620,7 @@ const darDeBajaSysEquipo = async (req, res, next) => {
                 motivo_baja,
                 fecha_baja: new Date()
             },
-            { where: { id_sys_equipo: id } }
+            { where: { id_sysequipo: id } }
         );
 
         if (affectedRows === 0) {
@@ -391,7 +658,7 @@ const getEstadisticasSysEquipos = async (req, res, next) => {
             db.SysEquipo.findAll({
                 attributes: [
                     'id_tipo_equipo_fk',
-                    [db.sequelize.fn('COUNT', db.sequelize.col('id_sys_equipo')), 'total']
+                    [db.sequelize.fn('COUNT', db.sequelize.col('id_sysequipo')), 'total']
                 ],
                 include: [{
                     model: db.TipoEquipo,
@@ -403,7 +670,7 @@ const getEstadisticasSysEquipos = async (req, res, next) => {
             db.SysEquipo.findAll({
                 attributes: [
                     'id_servicio_fk',
-                    [db.sequelize.fn('COUNT', db.sequelize.col('id_sys_equipo')), 'total']
+                    [db.sequelize.fn('COUNT', db.sequelize.col('id_sysequipo')), 'total']
                 ],
                 include: [{
                     model: db.Servicio,
@@ -491,6 +758,103 @@ const getSysEquiposPorTipo = async (req, res, next) => {
     }
 };
 
+// Obtener equipos en bodega
+const getEquiposEnBodega = async (req, res, next) => {
+    try {
+        const equipos = await db.SysEquipo.findAll({
+            where: {
+                activo: 0,
+                ubicacion: 'Bodega',
+                estado_baja: 0
+            },
+            include: [
+                {
+                    model: db.Hospital,
+                    as: 'hospital',
+                    attributes: ['id_hospital', 'nombre_hospital']
+                },
+                {
+                    model: db.Servicio,
+                    as: 'servicio',
+                    attributes: ['id', 'nombres']
+                },
+                {
+                    model: db.TipoEquipo,
+                    as: 'tipoEquipo',
+                    attributes: ['id', 'nombres']
+                },
+                {
+                    model: db.Usuario,
+                    as: 'usuario',
+                    attributes: ['id', 'nombres', 'apellidos']
+                }
+            ],
+            order: [['updatedAt', 'DESC']]
+        });
+
+        res.json({
+            success: true,
+            data: equipos,
+            count: equipos.length
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Obtener equipos dados de baja
+const getEquiposDadosDeBaja = async (req, res, next) => {
+    try {
+        const equipos = await db.SysEquipo.findAll({
+            where: {
+                estado_baja: 1
+            },
+            include: [
+                {
+                    model: db.Hospital,
+                    as: 'hospital',
+                    attributes: ['id_hospital', 'nombre_hospital']
+                },
+                {
+                    model: db.Servicio,
+                    as: 'servicio',
+                    attributes: ['id', 'nombres']
+                },
+                {
+                    model: db.TipoEquipo,
+                    as: 'tipoEquipo',
+                    attributes: ['id', 'nombres']
+                },
+                {
+                    model: db.Usuario,
+                    as: 'usuario',
+                    attributes: ['id', 'nombres', 'apellidos']
+                },
+                {
+                    model: db.SysBaja,
+                    as: 'baja',
+                    include: [
+                        {
+                            model: db.Usuario,
+                            as: 'usuario',
+                            attributes: ['id', 'nombres', 'apellidos']
+                        }
+                    ]
+                }
+            ],
+            order: [['updatedAt', 'DESC']]
+        });
+
+        res.json({
+            success: true,
+            data: equipos,
+            count: equipos.length
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getAllSysEquipos,
     getSysEquipoById,
@@ -499,9 +863,12 @@ module.exports = {
     updateSysEquipo,
     patchSysEquipo,
     deleteSysEquipo,
+    hardDeleteSysEquipo,
     reactivarSysEquipo,
     darDeBajaSysEquipo,
     getEstadisticasSysEquipos,
     getSysEquiposPorServicio,
-    getSysEquiposPorTipo
+    getSysEquiposPorTipo,
+    getEquiposEnBodega,
+    getEquiposDadosDeBaja
 };

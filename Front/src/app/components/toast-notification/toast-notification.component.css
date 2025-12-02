@@ -1,0 +1,141 @@
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-left: 4px solid;
+  min-width: 300px;
+  animation: slideIn 0.3s ease-out;
+  pointer-events: all;
+  transition: all 0.3s ease;
+}
+
+.toast:hover {
+  transform: translateX(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast-success {
+  border-left-color: #10b981;
+  background: linear-gradient(to right, #f0fdf4 0%, white 10%);
+}
+
+.toast-error {
+  border-left-color: #ef4444;
+  background: linear-gradient(to right, #fef2f2 0%, white 10%);
+}
+
+.toast-warning {
+  border-left-color: #f59e0b;
+  background: linear-gradient(to right, #fffbeb 0%, white 10%);
+}
+
+.toast-info {
+  border-left-color: #3b82f6;
+  background: linear-gradient(to right, #eff6ff 0%, white 10%);
+}
+
+.toast-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.toast-success .toast-icon {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.toast-error .toast-icon {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.toast-warning .toast-icon {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.toast-info .toast-icon {
+  background-color: #dbeafe;
+  color: #2563eb;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-message {
+  margin: 0;
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+@media (max-width: 640px) {
+  .toast-container {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+
+  .toast {
+    min-width: 0;
+  }
+}

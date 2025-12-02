@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MantenimientosService, Mantenimiento } from '../../services/mantenimientos.service';
+import { ActividadService } from '../../services/actividad.service';
 
 @Component({
   selector: 'app-mantenimientos',
@@ -20,7 +21,10 @@ export class MantenimientosComponent implements OnInit {
   isLoading: boolean = false;
   error: string | null = null;
 
-  constructor(private mantenimientosService: MantenimientosService) {}
+  constructor(
+    private mantenimientosService: MantenimientosService,
+    private actividadService: ActividadService
+  ) {}
 
   ngOnInit() {
     this.loadMantenimientos();
@@ -117,9 +121,15 @@ export class MantenimientosComponent implements OnInit {
    */
   deleteMantenimiento(id: number) {
     if (confirm('¿Estás seguro de que deseas eliminar este mantenimiento?')) {
+      // Encontrar el mantenimiento para obtener su número de reporte
+      const mantenimiento = this.mantenimientos.find(m => m.id_sysmtto === id);
+      const numeroReporte = mantenimiento?.numero_reporte || 'N/A';
+      
       this.mantenimientosService.deleteMantenimiento(id).subscribe({
         next: (response) => {
           if (response.success) {
+            // Registrar actividad
+            this.actividadService.mantenimientoEliminado(numeroReporte);
             this.loadMantenimientos();
             alert('Mantenimiento eliminado exitosamente');
           }

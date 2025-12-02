@@ -1,0 +1,143 @@
+<div class="container">
+  <!-- Navigation Tabs -->
+  <div class="tabs-container">
+    <button 
+      class="tab-button"
+      [class.active]="activeTab === 'usuarios'"
+      (click)="setActiveTab('usuarios')">
+      <i class="fas fa-users"></i> Usuarios
+    </button>
+    <button 
+      class="tab-button"
+      [class.active]="activeTab === 'equipos'"
+      (click)="setActiveTab('equipos')">
+      <i class="fas fa-computer"></i> Equipos
+    </button>
+    <button 
+      class="tab-button"
+      [class.active]="activeTab === 'formatos'"
+      (click)="setActiveTab('formatos')">
+      <i class="fas fa-file-alt"></i> Formatos
+    </button>
+  </div>
+
+  <!-- TAB: USUARIOS -->
+  @if (activeTab === 'usuarios') {
+    <div class="tab-content">
+      <!-- Header Section -->
+      <div class="header-section">
+        <h1>Control de Usuarios</h1>
+        <p>Lista de todos los usuarios registrados en el sistema</p>
+      </div>
+
+      <!-- Loading State -->
+      @if (loading) {
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <p>Cargando usuarios...</p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (error) {
+        <div class="error-message">
+          <strong>Error:</strong> {{ error }}
+          <button class="btn-retry" (click)="cargarUsuarios()">Intentar de nuevo</button>
+        </div>
+      }
+
+      <!-- Users Table -->
+      @if (!loading && !error && usuarios.length > 0) {
+        <div class="table-container">
+          <table class="usuarios-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (usuario of usuarios; track usuario.id) {
+                <tr>
+                  <td class="text-center">{{ usuario.id }}</td>
+                  <td>{{ usuario.nombres }}</td>
+                  <td>{{ usuario.apellidos }}</td>
+                  <td class="username">{{ usuario.nombreUsuario }}</td>
+                  <td class="email">{{ usuario.email }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="obtenerClaseEstado(usuario.estado)">
+                      {{ obtenerEstadoTexto(usuario.estado) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary">
+          <p>Total de usuarios: <strong>{{ usuarios.length }}</strong></p>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!loading && !error && usuarios.length === 0) {
+        <div class="empty-state">
+          <p>No hay usuarios registrados</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- TAB: EQUIPOS -->
+  @if (activeTab === 'equipos') {
+    <div class="tab-content">
+      <div class="header-section">
+        <h1>Gestión de Equipos</h1>
+        <p>Visualiza, crea y administra los equipos del hospital</p>
+      </div>
+      
+      <div class="action-cards">
+        <div class="action-card">
+          <div class="card-icon">
+            <i class="fas fa-laptop"></i>
+          </div>
+          <h3>Ver Equipos</h3>
+          <p>Consulta el inventario de todos los equipos registrados</p>
+          <a href="/equipos" class="btn btn-primary">Acceder</a>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- TAB: FORMATOS -->
+  @if (activeTab === 'formatos') {
+    <div class="tab-content">
+      <div class="header-section">
+        <h1>Formatos Disponibles</h1>
+        <p>Accede a los diferentes formatos de mantenimiento y documentación</p>
+      </div>
+
+      <div class="formatos-grid">
+        @for (formato of formatos; track formato.ruta) {
+          <a [href]="formato.ruta" class="formato-card">
+            <div class="formato-icon">
+              <i [ngClass]="formato.iconoClase"></i>
+            </div>
+            <h3>{{ formato.nombre }}</h3>
+            <p>{{ formato.descripcion }}</p>
+            <span class="arrow">
+              <i class="fas fa-arrow-right"></i>
+            </span>
+          </a>
+        }
+      </div>
+    </div>
+  }
+</div>
+

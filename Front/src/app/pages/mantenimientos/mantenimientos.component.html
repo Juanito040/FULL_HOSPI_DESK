@@ -5,7 +5,7 @@
       <p class="subtitle">Administra todos los mantenimientos de equipos de sistemas</p>
     </div>
     <button class="btn btn-primary">
-      <span>➕</span>
+      <span></span>
       <span>Nuevo Mantenimiento</span>
     </button>
   </div>
@@ -13,7 +13,7 @@
   <!-- Barra de búsqueda y filtros -->
   <div class="toolbar">
     <div class="search-box">
-      <span class="search-icon">🔍</span>
+      <span class="search-icon"><i class="fas fa-search"></i></span>
       <input
         type="text"
         placeholder="Buscar por reporte, equipo, técnico u observaciones..."
@@ -95,10 +95,10 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <button class="btn-icon" title="Ver detalles">👁️</button>
-                  <button class="btn-icon" title="Editar">✏️</button>
-                  <button class="btn-icon" title="Generar PDF">📄</button>
-                  <button class="btn-icon" title="Eliminar" (click)="deleteMantenimiento(mant.id_sysmtto!)">🗑️</button>
+                  <button class="btn-icon" title="Ver detalles"><i class="fas fa-eye"></i></button>
+                  <button class="btn-icon" title="Editar"><i class="fas fa-edit"></i></button>
+                  <button class="btn-icon" title="Generar PDF"><i class="fas fa-file"></i></button>
+                  <button class="btn-icon" title="Eliminar" (click)="deleteMantenimiento(mant.id_sysmtto!)"><i class="fas fa-trash"></i></button>
                 </div>
               </td>
             </tr>

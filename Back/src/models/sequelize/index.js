@@ -66,6 +66,15 @@ db.MantenimientoMSV = require('./mantenimientoMSV.model')(sequelize, Sequelize);
 db.Repuesto = require('./repuesto.model')(sequelize, Sequelize);
 db.Llamado = require('./llamado.model')(sequelize, Sequelize);
 
+// Importar modelos de actividades metrológicas y planes
+db.ActividadMetrologica = require('./actividadMetrologica.model')(sequelize, Sequelize);
+db.PlanActividadMetrologica = require('./planActividadMetrologica.model')(sequelize, Sequelize);
+db.PlanMantenimiento = require('./planMantenimiento.model')(sequelize, Sequelize);
+db.CumplimientoProtocoloPreventivo = require('./cumplimientoProtocoloPreventivo.model')(sequelize, Sequelize);
+
+// Importar modelos de sistemas
+db.Backup = require('./backup.model')(sequelize, Sequelize);
+
 // Definir asociaciones/relaciones
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

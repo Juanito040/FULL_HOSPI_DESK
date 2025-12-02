@@ -3,7 +3,7 @@
     <div class="dialog-container" (click)="$event.stopPropagation()">
       <!-- Icon -->
       <div class="dialog-icon" [class]="'dialog-icon-' + type">
-        {{ icon }}
+        <i [ngClass]="icon"></i>
       </div>
 
       <!-- Content -->

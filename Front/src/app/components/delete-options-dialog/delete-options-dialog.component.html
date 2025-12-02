@@ -1,0 +1,79 @@
+<div *ngIf="isOpen" class="modal-overlay" (click)="close()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>¿Qué deseas hacer con el equipo?</h2>
+      <button class="close-btn" (click)="close()">&times;</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      <p class="equipo-name">Equipo: <strong>{{ equipoNombre }}</strong></p>
+
+      <!-- Opciones -->
+      <div class="options-container">
+        <!-- Opción 1: Enviar a Bodega -->
+        <div
+          class="option-card"
+          [class.selected]="selectedAction === 'bodega'"
+          (click)="selectAction('bodega')">
+          <div class="option-icon">📦</div>
+          <h3>Enviar a Bodega</h3>
+          <p>El equipo se marcará como inactivo y se guardará en bodega. Podrá ser reactivado posteriormente.</p>
+        </div>
+
+        <!-- Opción 2: Dar de Baja -->
+        <div
+          class="option-card"
+          [class.selected]="selectedAction === 'baja'"
+          (click)="selectAction('baja')">
+          <div class="option-icon">🗑️</div>
+          <h3>Dar de Baja</h3>
+          <p>El equipo se dará de baja permanentemente. Se creará un registro histórico.</p>
+        </div>
+      </div>
+
+      <!-- Formulario según la opción seleccionada -->
+      <div class="form-container" *ngIf="selectedAction">
+        <!-- Formulario para Bodega -->
+        <div *ngIf="selectedAction === 'bodega'" class="form-section">
+          <label for="motivo">Motivo (opcional):</label>
+          <textarea
+            id="motivo"
+            [(ngModel)]="motivo"
+            placeholder="Ej: Equipo en reparación, obsoleto, etc."
+            rows="3"></textarea>
+        </div>
+
+        <!-- Formulario para Baja -->
+        <div *ngIf="selectedAction === 'baja'" class="form-section">
+          <label for="justificacion">Justificación de la baja: *</label>
+          <textarea
+            id="justificacion"
+            [(ngModel)]="justificacionBaja"
+            placeholder="Describa por qué se da de baja el equipo"
+            rows="3"
+            required></textarea>
+
+          <label for="accesorios">Accesorios reutilizables (opcional):</label>
+          <textarea
+            id="accesorios"
+            [(ngModel)]="accesoriosReutilizables"
+            placeholder="Ej: Cable de red, mouse, teclado, etc."
+            rows="2"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-cancel" (click)="close()">Cancelar</button>
+      <button
+        class="btn btn-confirm"
+        [disabled]="!selectedAction || (selectedAction === 'baja' && !justificacionBaja)"
+        (click)="confirm()">
+        {{ selectedAction === 'bodega' ? 'Enviar a Bodega' : 'Dar de Baja' }}
+      </button>
+    </div>
+  </div>
+</div>

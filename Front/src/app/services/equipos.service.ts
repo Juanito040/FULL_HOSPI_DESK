@@ -89,10 +89,53 @@ export class EquiposService {
   }
 
   /**
-   * Eliminar un equipo
+   * Enviar un equipo a bodega (soft delete con motivo)
+   */
+  enviarABodega(id: number, motivo?: string): Observable<EquipoResponse> {
+    return this.http.delete<EquipoResponse>(`${this.apiUrl}/${id}`, {
+      body: { motivo }
+    });
+  }
+
+  /**
+   * Dar de baja un equipo permanentemente
+   */
+  darDeBaja(id: number, data: {
+    justificacion_baja: string;
+    accesorios_reutilizables?: string;
+    id_usuario?: number;
+  }): Observable<EquipoResponse> {
+    return this.http.post<EquipoResponse>(`${this.apiUrl}/${id}/hard-delete`, data);
+  }
+
+  /**
+   * Obtener equipos en bodega
+   */
+  getEquiposEnBodega(): Observable<EquipoResponse> {
+    return this.http.get<EquipoResponse>(`${this.apiUrl}/bodega`);
+  }
+
+  /**
+   * Obtener equipos dados de baja
+   */
+  getEquiposDadosDeBaja(): Observable<EquipoResponse> {
+    return this.http.get<EquipoResponse>(`${this.apiUrl}/dados-baja`);
+  }
+
+  /**
+   * Eliminar un equipo (soft delete - inactivar)
+   * @deprecated Usar enviarABodega o darDeBaja según el caso
    */
   deleteEquipo(id: number): Observable<EquipoResponse> {
     return this.http.delete<EquipoResponse>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Eliminar un equipo permanentemente (hard delete)
+   * @deprecated Usar darDeBaja en su lugar
+   */
+  hardDeleteEquipo(id: number, password: string): Observable<EquipoResponse> {
+    return this.http.post<EquipoResponse>(`${this.apiUrl}/${id}/hard-delete`, { password });
   }
 
   /**

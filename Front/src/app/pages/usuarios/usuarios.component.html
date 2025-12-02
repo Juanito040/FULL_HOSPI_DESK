@@ -54,19 +54,19 @@
           <p>Funcionalidad en desarrollo. Próximamente podrás crear, editar y eliminar usuarios del sistema.</p>
           <div class="features-grid">
             <div class="feature-card">
-              <span class="feature-icon">✨</span>
+              <span class="feature-icon"></span>
               <span class="feature-name">Crear Usuarios</span>
             </div>
             <div class="feature-card">
-              <span class="feature-icon">✏️</span>
+              <span class="feature-icon"></span>
               <span class="feature-name">Editar Perfiles</span>
             </div>
             <div class="feature-card">
-              <span class="feature-icon">🔐</span>
+              <span class="feature-icon"></span>
               <span class="feature-name">Permisos</span>
             </div>
             <div class="feature-card">
-              <span class="feature-icon">📊</span>
+              <span class="feature-icon"></span>
               <span class="feature-name">Reportes</span>
             </div>
           </div>
@@ -79,10 +79,12 @@
       <div class="content-section">
         <div class="section-header">
           <h2>Control de Equipos</h2>
+
           <a routerLink="/equipos" class="btn btn-primary">
             <span>  </span>
-            <span>Ir a Equipos</span>
+            <span>Ver inventario</span>
           </a>
+
         </div>
 
         <div class="info-card">
@@ -111,7 +113,7 @@
         <div class="formatos-grid">
           @for (formato of formatos; track formato.ruta) {
             <a [routerLink]="formato.ruta" class="formato-card">
-              <div class="formato-icon">{{ formato.icono }}</div>
+              <div class="formato-icon"></div>
               <div class="formato-content">
                 <h3 class="formato-nombre">{{ formato.nombre }}</h3>
                 <p class="formato-descripcion">{{ formato.descripcion }}</p>

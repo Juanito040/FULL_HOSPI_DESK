@@ -15,7 +15,7 @@ export class ConfirmDialogComponent {
   @Input() confirmText: string = 'Confirmar';
   @Input() cancelText: string = 'Cancelar';
   @Input() type: 'danger' | 'warning' | 'info' = 'danger';
-  @Input() icon: string = '⚠️';
+  @Input() icon: string = 'fas fa-exclamation-triangle';
 
   @Output() confirmed = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();

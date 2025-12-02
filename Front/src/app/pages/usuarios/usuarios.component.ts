@@ -1,22 +1,29 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Equipo } from '../../services/equipos.service';
+import { EquipoModalComponent } from "../../components/equipo-modal/equipo-modal.component";
+
+
 
 interface Formato {
   nombre: string;
   ruta: string;
   icono: string;
   descripcion: string;
+  
 }
+
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, EquipoModalComponent],
   templateUrl: './usuarios.component.html',
   styleUrls: ['./usuarios.component.css']
 })
 export class UsuariosComponent {
+
   activeTab: 'usuarios' | 'equipos' | 'formatos' = 'usuarios';
 
   formatos: Formato[] = [
@@ -52,7 +59,12 @@ export class UsuariosComponent {
     }
   ];
 
+  
   setActiveTab(tab: 'usuarios' | 'equipos' | 'formatos') {
     this.activeTab = tab;
   }
+
+
 }
+
+
