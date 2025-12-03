@@ -153,7 +153,7 @@ export class IndicadoresComponent implements OnInit {
       {
         title: 'Total Mantenimientos',
         value: totalMantenimientos,
-        icon: '🔧',
+        icon: '●',
         trend: 'neutral',
         trendValue: totalMantenimientos.toString(),
         color: '#3b82f6'
@@ -161,7 +161,7 @@ export class IndicadoresComponent implements OnInit {
       {
         title: 'Mantenimientos Preventivos',
         value: this.estadisticasTipo.find(item => item.label === 'Preventivo')?.value || 0,
-        icon: '✅',
+        icon: '✓',
         trend: 'up',
         trendValue: `${this.estadisticasTipo.find(item => item.label === 'Preventivo')?.percentage || 0}%`,
         color: '#10b981'
@@ -169,7 +169,7 @@ export class IndicadoresComponent implements OnInit {
       {
         title: 'Mantenimientos Correctivos',
         value: this.estadisticasTipo.find(item => item.label === 'Correctivo')?.value || 0,
-        icon: '⚠️',
+        icon: '!',
         trend: 'neutral',
         trendValue: `${this.estadisticasTipo.find(item => item.label === 'Correctivo')?.percentage || 0}%`,
         color: '#f59e0b'
@@ -177,7 +177,7 @@ export class IndicadoresComponent implements OnInit {
       {
         title: 'Total Horas Fuera Servicio',
         value: this.tiempoFueraServicio.reduce((sum, item) => sum + item.horas, 0).toFixed(1) + 'h',
-        icon: '⏱️',
+        icon: '○',
         trend: 'down',
         trendValue: 'Últimos meses',
         color: '#8b5cf6'

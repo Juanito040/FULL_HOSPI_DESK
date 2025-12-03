@@ -70,7 +70,8 @@ db.Llamado = require('./llamado.model')(sequelize, Sequelize);
 db.ActividadMetrologica = require('./actividadMetrologica.model')(sequelize, Sequelize);
 db.PlanActividadMetrologica = require('./planActividadMetrologica.model')(sequelize, Sequelize);
 db.PlanMantenimiento = require('./planMantenimiento.model')(sequelize, Sequelize);
-db.CumplimientoProtocoloPreventivo = require('./cumplimientoProtocoloPreventivo.model')(sequelize, Sequelize);
+// TEMPORAL: Comentado para permitir que el servidor inicie
+// db.CumplimientoProtocoloPreventivo = require('./cumplimientoProtocoloPreventivo.model')(sequelize, Sequelize);
 
 // Importar modelos de sistemas
 db.Backup = require('./backup.model')(sequelize, Sequelize);

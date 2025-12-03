@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService, Usuario } from '../../services/auth.service';
 
 interface MenuItem {
   label: string;
@@ -8,6 +9,7 @@ interface MenuItem {
   path?: string;
   submenu?: SubMenuItem[];
   isOpen?: boolean;
+  roles?: string[];
 }
 
 interface SubMenuItem {
@@ -23,8 +25,18 @@ interface SubMenuItem {
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   isMenuOpen = false;
+  currentUser: Usuario | null = null;
+  showUserMenu = false;
+
+  constructor(public authService: AuthService) {}
+
+  ngOnInit() {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
 
   menuItems: MenuItem[] = [
     {
@@ -35,7 +47,8 @@ export class NavbarComponent {
     {
       path: '/usuarios',
       label: 'Usuario',
-      icon: ''
+      icon: '',
+      roles: ['Administrador']
     },
     {
       path: '/mantenimientos',
@@ -50,7 +63,8 @@ export class NavbarComponent {
     {
       path: '/backups',
       label: 'Backups',
-      icon: ''
+      icon: '',
+      roles: ['Administrador', 'Supervisor']
     },
     {
       path: '/inventario',
@@ -71,5 +85,34 @@ export class NavbarComponent {
     if (item.submenu) {
       item.isOpen = !item.isOpen;
     }
+  }
+
+  toggleUserMenu() {
+    this.showUserMenu = !this.showUserMenu;
+  }
+
+  logout() {
+    this.authService.logout();
+    this.closeMenu();
+  }
+
+  canShowMenuItem(item: MenuItem): boolean {
+    if (!item.roles || item.roles.length === 0) {
+      return true;
+    }
+    return this.authService.hasRole(item.roles);
+  }
+
+  getGreetingMessage(): string {
+    const hour = new Date().getHours();
+    const timeGreeting = hour < 12 ? 'Buenos días' : 'Buenas tardes';
+
+    if (this.currentUser) {
+      const firstName = this.currentUser.nombres.split(' ')[0];
+      const role = this.currentUser.rol?.nombre || '';
+      return `${timeGreeting}, ${firstName} - ${role}`;
+    }
+
+    return timeGreeting;
   }
 }

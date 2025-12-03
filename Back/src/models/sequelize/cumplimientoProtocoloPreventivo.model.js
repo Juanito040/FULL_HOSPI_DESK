@@ -16,7 +16,7 @@ module.exports = (sequelize) => {
       allowNull: false,
       references: {
         model: 'protocoloPreventivo',
-        key: 'id'
+        key: 'id_protocolo_preventivo'
       }
     },
     reporteIdFk: {

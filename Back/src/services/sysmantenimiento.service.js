@@ -197,15 +197,13 @@ class SysMantenimientoService {
       where: { ...where, tipo_mantenimiento: 'Otro' }
     });
 
-    const total = correctivos + preventivos + predictivos + otros;
-
-    return {
-      correctivos,
-      preventivos,
-      predictivos,
-      otros,
-      total
-    };
+    // Retornar en formato de array para el frontend
+    return [
+      { tipo: 'Preventivo', cantidad: preventivos },
+      { tipo: 'Correctivo', cantidad: correctivos },
+      { tipo: 'Predictivo', cantidad: predictivos },
+      { tipo: 'Otro', cantidad: otros }
+    ];
   }
 
   /**
@@ -252,20 +250,21 @@ class SysMantenimientoService {
       where: { ...where, tipo_falla: 'No Registra' }
     });
 
-    return {
-      desgaste,
-      operacionIndebida,
-      causaExterna,
-      accesorios,
-      desconocido,
-      sinFalla,
-      otros: otrosFallas,
-      noRegistra
-    };
+    // Retornar en formato de array para el frontend
+    return [
+      { tipo_falla: 'Desgaste', cantidad: desgaste },
+      { tipo_falla: 'Operación Indebida', cantidad: operacionIndebida },
+      { tipo_falla: 'Causa Externa', cantidad: causaExterna },
+      { tipo_falla: 'Accesorios', cantidad: accesorios },
+      { tipo_falla: 'Desconocido', cantidad: desconocido },
+      { tipo_falla: 'Sin Falla', cantidad: sinFalla },
+      { tipo_falla: 'Otros', cantidad: otrosFallas },
+      { tipo_falla: 'No Registra', cantidad: noRegistra }
+    ].filter(item => item.cantidad > 0); // Solo mostrar fallas que existan
   }
 
   /**
-   * Obtener tiempo total fuera de servicio
+   * Obtener tiempo total fuera de servicio agrupado por mes
    */
   async getTiempoFueraServicio(fechaInicio, fechaFin) {
     const where = {};
@@ -279,11 +278,20 @@ class SysMantenimientoService {
     const result = await SysMantenimiento.findAll({
       where,
       attributes: [
-        [db.sequelize.fn('SUM', db.sequelize.col('tiempo_fuera_servicio')), 'total']
-      ]
+        [db.sequelize.fn('DATE_FORMAT', db.sequelize.col('fecha'), '%Y-%m'), 'mes'],
+        [db.sequelize.fn('SUM', db.sequelize.col('tiempo_fuera_servicio')), 'total_horas'],
+        [db.sequelize.fn('COUNT', db.sequelize.col('id_sysmtto')), 'cantidad']
+      ],
+      group: [db.sequelize.fn('DATE_FORMAT', db.sequelize.col('fecha'), '%Y-%m')],
+      order: [[db.sequelize.fn('DATE_FORMAT', db.sequelize.col('fecha'), '%Y-%m'), 'ASC']],
+      raw: true
     });
 
-    return result[0]?.dataValues?.total || 0;
+    return result.map(item => ({
+      mes: item.mes,
+      total_horas: parseFloat(item.total_horas) || 0,
+      cantidad_mantenimientos: parseInt(item.cantidad) || 0
+    }));
   }
 
   /**

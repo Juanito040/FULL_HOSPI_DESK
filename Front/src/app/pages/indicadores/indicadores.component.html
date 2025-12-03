@@ -17,7 +17,7 @@
   <!-- Mensaje de carga -->
   @if (isLoading) {
     <div class="loading-state">
-      <div class="spinner">⏳</div>
+      <div class="spinner">...</div>
       <p>Cargando indicadores...</p>
     </div>
   }
@@ -25,9 +25,11 @@
   <!-- Mensaje de error -->
   @if (error && !isLoading) {
     <div class="error-state">
-      <div class="error-icon">⚠️</div>
+      <div class="error-icon">!</div>
       <p>{{ error }}</p>
-      <button class="btn btn-primary" (click)="loadDashboard()">Reintentar</button>
+      <button class="btn btn-primary" (click)="loadDashboard()">
+        <span>Reintentar</span>
+      </button>
     </div>
   }
 
@@ -143,11 +145,9 @@
     <!-- Botones de acción -->
     <div class="actions-footer">
       <button class="btn btn-primary">
-        <span></span>
         <span>Exportar Informe</span>
       </button>
       <button class="btn btn-secondary">
-        <span></span>
         <span>Generar PDF</span>
       </button>
     </div>

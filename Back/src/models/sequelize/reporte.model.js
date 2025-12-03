@@ -92,7 +92,7 @@ module.exports = (sequelize) => {
       allowNull: false,
       references: {
         model: 'sysequipo',
-        key: 'id'
+        key: 'id_sysequipo'
       }
     },
     usuarioIdFk: {

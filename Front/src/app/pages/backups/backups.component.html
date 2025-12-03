@@ -7,15 +7,15 @@
         <p>Administra los respaldos y recuperación de datos del sistema</p>
       </div>
       <div class="header-buttons">
-        <button 
+        <button
           (click)="refrescar()"
           class="btn btn-secondary">
-          Recargar
+          <span>Recargar</span>
         </button>
-        <button 
+        <button
           (click)="openModal()"
           class="btn btn-primary">
-          Nuevo Backup
+          <span>Nuevo Backup</span>
         </button>
       </div>
     </div>
@@ -45,10 +45,10 @@
           <div class="pending-card">
             <div class="pending-header">
               <h3>{{ pendiente.nombre_recurso }}</h3>
-              <button 
+              <button
                 (click)="verDetallesPendientes(pendiente.id_reporte_backup)"
                 class="btn btn-small btn-primary">
-                Ver
+                <span>Ver</span>
               </button>
             </div>
             <div class="pending-body">
@@ -61,7 +61,7 @@
         }
         @if (backupsPendientes.length === 0) {
           <div class="empty-state">
-            ✅ No hay backups pendientes. ¡Todos están al día!
+            No hay backups pendientes. ¡Todos están al día!
           </div>
         }
       </div>
@@ -108,23 +108,23 @@
                   <td>{{ getNombreUsuario(backup.id_autor_realizado_fk) }}</td>
                   <td class="actions-cell">
                     <div class="action-buttons">
-                      <button 
+                      <button
                         (click)="openModal(backup)"
-                        class="btn btn-icon btn-primary"
+                        class="btn btn-icon"
                         title="Editar">
-                        ✏️
+                        <i class="fas fa-edit"></i>
                       </button>
-                      <button 
+                      <button
                         (click)="deleteBackup(backup.id_reporte_backup)"
-                        class="btn btn-icon btn-danger"
+                        class="btn btn-icon"
                         title="Eliminar">
-                        🗑️
+                        <i class="fas fa-trash"></i>
                       </button>
-                      <button 
+                      <button
                         (click)="actualizarBackupRealizado(backup)"
-                        class="btn btn-icon btn-success"
+                        class="btn btn-icon"
                         title="Marcar como realizado">
-                        ✓
+                        <i class="fas fa-check"></i>
                       </button>
                     </div>
                   </td>
@@ -311,10 +311,10 @@
             <!-- Footer -->
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" (click)="closeModal()">
-                Cancelar
+                <span>Cancelar</span>
               </button>
               <button type="submit" class="btn btn-primary">
-                {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+                <span>{{ isEditMode ? 'Actualizar' : 'Guardar' }}</span>
               </button>
             </div>
           </form>

@@ -54,7 +54,8 @@ module.exports = (sequelize) => {
     },
     caso_ms: {
       type: DataTypes.ENUM('Si', 'No'),
-      allowNull: false
+      allowNull: false,
+      defaultValue: 'No'
     },
     observaciones: {
       type: DataTypes.TEXT,

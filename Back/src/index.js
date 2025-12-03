@@ -2,11 +2,40 @@ const app = require('./app');
 const config = require('./config/config');
 const db = require('./models/sequelize');
 
+// Migración automática: agregar columna caso_ms si no existe
+const addCasoMsColumn = async () => {
+    try {
+        const [columns] = await db.sequelize.query(`
+            SELECT COLUMN_NAME
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE()
+            AND TABLE_NAME = 'reporte_backup'
+            AND COLUMN_NAME = 'caso_ms'
+        `);
+
+        if (columns.length === 0) {
+            console.log('→ Agregando columna caso_ms a reporte_backup...');
+            await db.sequelize.query(`
+                ALTER TABLE reporte_backup
+                ADD COLUMN caso_ms ENUM('Si', 'No') NOT NULL DEFAULT 'No'
+                AFTER numero_caso_ms
+            `);
+            console.log('✓ Columna caso_ms agregada exitosamente');
+        }
+    } catch (error) {
+        // Si hay error, no detener el servidor
+        console.log('⚠ Advertencia al verificar/agregar caso_ms:', error.message);
+    }
+};
+
 // Función para iniciar el servidor
 const startServer = async () => {
     try {
         // Probar conexión a la base de datos con Sequelize
         await db.testConnection();
+
+        // Ejecutar migraciones automáticas
+        await addCasoMsColumn();
 
         // En desarrollo, puedes sincronizar los modelos automáticamente
         // NOTA: En producción, usa migraciones en lugar de sync

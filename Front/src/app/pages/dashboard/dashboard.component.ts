@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { EquiposService } from '../../services/equipos.service';
 import { MantenimientosService } from '../../services/mantenimientos.service';
 import { ActividadService, ActividadItem } from '../../services/actividad.service';
+import { AuthService } from '../../services/auth.service';
 import { forkJoin } from 'rxjs';
 
 
@@ -46,7 +47,7 @@ export class DashboardComponent implements OnInit {
   currentTime: string = '';
   currentDate: string = '';
   greeting: string = '';
-  userName: string = 'Administrador'; // TODO: Obtener del servicio de autenticación
+  userName: string = '';
 
   // Estados de carga
   isLoading: boolean = false;
@@ -55,7 +56,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private equiposService: EquiposService,
     private mantenimientosService: MantenimientosService,
-    private actividadService: ActividadService
+    private actividadService: ActividadService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -107,6 +109,14 @@ export class DashboardComponent implements OnInit {
       this.greeting = 'Buenas tardes';
     } else {
       this.greeting = 'Buenas noches';
+    }
+
+    // Obtener nombre y rol del usuario autenticado
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser) {
+      const firstName = currentUser.nombres.split(' ')[0];
+      const role = currentUser.rol?.nombre || '';
+      this.userName = `${firstName} - ${role}`;
     }
   }
 

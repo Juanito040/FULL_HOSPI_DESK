@@ -4,6 +4,7 @@ const router = express.Router();
 
 // Importar rutas
 const healthRoutes = require('./health.routes');
+const authRoutes = require('./auth.routes'); // Rutas de autenticación
 const sysEquipoRoutes = require('./sysequipo.sequelize.routes'); // Rutas mejoradas con Sequelize
 const sysHojaVidaRoutes = require('./syshojavida.routes'); // Rutas de hojas de vida IT
 const mantenimientoRoutes = require('./mantenimiento.routes'); // Rutas de mantenimiento
@@ -14,6 +15,7 @@ const backupRoutes = require('./backup.routes'); // Rutas de backups/reportes de
 
 // Rutas de la API
 router.use('/health', healthRoutes);
+router.use('/auth', authRoutes); // Autenticación y autorización
 router.use('/sysequipo', sysEquipoRoutes); // CRUD completo de equipos de sistemas
 router.use('/syshojavida', sysHojaVidaRoutes); // CRUD completo de hojas de vida IT
 router.use('/mantenimiento', mantenimientoRoutes); // CRUD completo de mantenimientos
@@ -30,6 +32,7 @@ router.get('/', (req, res) => {
         version: '1.0.0',
         endpoints: {
             health: '/api/health',
+            auth: '/api/auth',
             sysequipo: '/api/sysequipo',
             syshojavida: '/api/syshojavida',
             mantenimiento: '/api/mantenimiento',

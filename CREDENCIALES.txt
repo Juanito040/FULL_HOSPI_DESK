@@ -1,0 +1,94 @@
+========================================
+CREDENCIALES DE ACCESO
+Hospital San Rafael - Sistema de Gestión
+========================================
+
+URL: http://localhost:4200
+
+========================================
+ADMINISTRADOR (Acceso Total)
+========================================
+Usuario: admin
+Contraseña: admin123
+
+Permisos:
+- Acceso a todos los módulos
+- Gestión de usuarios
+- Gestión de backups
+- Gestión de equipos
+- Todos los reportes y formatos
+
+========================================
+SUPERVISOR
+========================================
+Usuario: supervisor
+Contraseña: super123
+
+Permisos:
+- Acceso a backups
+- Gestión de equipos
+- Reportes e indicadores
+- Sin acceso a gestión de usuarios
+
+========================================
+TÉCNICO
+========================================
+Usuario: tecnico
+Contraseña: tecnico123
+
+Permisos:
+- Gestión de equipos
+- Mantenimientos
+- Hojas de vida
+- Reportes básicos
+- Sin acceso a usuarios ni backups
+
+========================================
+INSTRUCCIONES DE USO
+========================================
+
+1. Iniciar Backend:
+   cd Back
+   npm run dev
+   (Servidor en http://localhost:3000)
+
+2. Iniciar Frontend:
+   cd Front
+   ng serve
+   (Aplicación en http://localhost:4200)
+
+3. Abrir navegador en:
+   http://localhost:4200
+
+4. Iniciar sesión con las credenciales de arriba
+
+========================================
+NOTAS IMPORTANTES
+========================================
+
+- Las contraseñas están hasheadas con bcrypt
+- Los tokens JWT expiran en 24 horas
+- Para cambiar contraseñas, usar el menú de usuario
+- En producción, cambiar JWT_SECRET en .env
+
+========================================
+VERIFICAR QUE FUNCIONA
+========================================
+
+✅ Backend: http://localhost:3000/api
+   Debe mostrar mensaje de bienvenida
+
+✅ Login: http://localhost:4200
+   Debe mostrar pantalla de login
+
+✅ Con usuario admin, debes ver:
+   - Menú "Usuario"
+   - Menú "Backups"
+
+✅ Con usuario tecnico, NO debes ver:
+   - Menú "Usuario"
+   - Menú "Backups"
+
+========================================
+¡Sistema listo para usar! 🎉
+========================================
