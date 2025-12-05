@@ -1,4 +1,4 @@
-# Sistema de Gestión de Mantenimiento - Hospital San Rafael
+# Sistema de Gestión de equipos - Hospital San Rafael
 
 Sistema integral para la gestión y control de equipos médicos y tecnológicos, incluyendo mantenimientos preventivos y correctivos, hojas de vida, inventarios y reportes de backups.
 
