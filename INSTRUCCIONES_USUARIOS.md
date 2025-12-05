@@ -4,20 +4,20 @@
 
 El script `setup-users.js` crea los siguientes usuarios automáticamente:
 
-### 👤 Usuario Administrador
+###  Usuario Administrador
 - **Usuario:** `admin`
 - **Contraseña:** `admin123`
 - **Email:** admin@hospitalsr.com
 - **Rol:** Administrador
 - **Permisos:** Acceso completo al sistema
 
-### 👤 Ingeniero Biomédico
+###  Ingeniero Biomédico
 - **Usuario:** `jramirez`
 - **Contraseña:** `biomedico123`
 - **Email:** jramirez@hospitalsr.com
 - **Rol:** Ingeniero Biomédico
 
-### 👤 Técnico de Sistemas
+###  Técnico de Sistemas
 - **Usuario:** `mlopez`
 - **Contraseña:** `sistemas123`
 - **Email:** mlopez@hospitalsr.com
@@ -25,7 +25,7 @@ El script `setup-users.js` crea los siguientes usuarios automáticamente:
 
 ---
 
-## 🚀 Cómo Ejecutar el Script
+##  Cómo Ejecutar el Script
 
 ### Paso 1: Verificar Conexión a Base de Datos
 
@@ -54,10 +54,10 @@ node setup-users.js
 Si todo sale bien, verás un mensaje similar a:
 
 ```
-✅ CONFIGURACIÓN COMPLETADA
-📋 CREDENCIALES DE ACCESO:
+ CONFIGURACIÓN COMPLETADA
+ CREDENCIALES DE ACCESO:
 
-👤 Administrador Sistema
+ Administrador Sistema
    Usuario: admin
    Contraseña: admin123
    Rol: Administrador
@@ -67,7 +67,7 @@ Si todo sale bien, verás un mensaje similar a:
 
 ---
 
-## 🔧 Personalizar Usuarios
+##  Personalizar Usuarios
 
 Si deseas crear usuarios diferentes, edita el archivo `Back/setup-users.js` y modifica el array `usuarios`:
 
@@ -91,7 +91,7 @@ const usuarios = [
 
 ---
 
-## 🔐 Roles Disponibles
+##  Roles Disponibles
 
 Los siguientes roles se crean automáticamente:
 
@@ -103,7 +103,7 @@ Los siguientes roles se crean automáticamente:
 
 ---
 
-## ⚠️ Seguridad Importante
+##  Seguridad Importante
 
 1. **Cambiar contraseñas:** Inmediatamente después de crear los usuarios, cambia las contraseñas por defecto
 2. **No compartir credenciales:** Cada usuario debe tener su propia cuenta
@@ -112,7 +112,7 @@ Los siguientes roles se crean automáticamente:
 
 ---
 
-## 🐛 Solución de Problemas
+##  Solución de Problemas
 
 ### Error: "Cannot connect to database"
 - Verifica que MySQL/MariaDB esté ejecutándose
@@ -129,6 +129,6 @@ Los siguientes roles se crean automáticamente:
 
 ---
 
-## 📞 Soporte
+##  Soporte
 
 Si tienes problemas, revisa los logs del script o contacta al equipo de desarrollo.
