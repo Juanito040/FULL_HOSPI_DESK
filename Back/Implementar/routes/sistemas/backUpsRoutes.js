@@ -25,7 +25,7 @@ router.get('/backups', async (req, res) => {
 });
 
 
-router.get('/backup/:id', async (req, res) => {
+router.get('/backups/:id', async (req, res) => {
     try {
         const backup = await Backup.findByPk(req.params.id, {
             include: ['autorRealizado']
@@ -44,7 +44,7 @@ router.get('/backup/:id', async (req, res) => {
 });
 
 
-router.post('/addbackup', async (req, res) => {
+router.post('backup', async (req, res) => {
     try {
         const nuevoBackup = await Backup.create(req.body);
         res.status(201).json(nuevoBackup);
@@ -75,7 +75,7 @@ router.delete('/rembackup/:id', async (req, res) => {
 });
 
 
-router.get('/backups/usuario/:id', async (req, res) => {
+router.get('/backup/usuario/:id', async (req, res) => {
     try {
         const backups = await Backup.findAll({
             where: { id_autor_realizado_fk: req.params.id },
@@ -93,7 +93,7 @@ router.get('/backups/usuario/:id', async (req, res) => {
 });
 
 
-router.get('/backups/rango', async (req, res) => {
+router.get('/backup/rango', async (req, res) => {
     try {
         const { inicio, fin, limit = 100, offset = 0 } = req.query;
 
@@ -134,7 +134,7 @@ router.get('/backups/rango', async (req, res) => {
 });
 
 
-router.get('/backups/pendientes', async (req, res) => {
+router.get('/backup/pendientes', async (req, res) => {
     try {
         const ultimos = await Backup.findAll({
             attributes: [
@@ -187,7 +187,7 @@ router.get('/backups/pendientes', async (req, res) => {
     }
 });
 
-router.get('/backups/pendientes/:id', async (req, res) => {
+router.get('/backup/pendientes/:id', async (req, res) => {
     try {
         const resultado = await getPendingBackupsById(req.params.id);
         res.json(resultado);

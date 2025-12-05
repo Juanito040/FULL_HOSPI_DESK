@@ -70,10 +70,18 @@ export const routes: Routes = [
   },
   {
     path: 'backups',
-    loadComponent: () => import('./pages/backups/backups.component').then(m => m.BackupsComponent),
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Administrador', 'Supervisor'] }
+    loadComponent: () => import('./pages/backups/backupsComponent/backups.component').then(m => m.BackupsComponent)
   },
+  {
+  path: 'newbackup',
+  loadComponent: () => import('./pages/backups/newBackups/newbackup.component')
+    .then(m => m.NewBackupComponent)
+},
+{
+  path: 'formatobackup/:id',
+  loadComponent: () => import('./pages/backups/formatoBackups/formatobackup.component')
+    .then(m => m.FormatoBackupComponent)
+},
   {
     path: 'hojas-vida',
     loadComponent: () => import('./pages/hojas-vida/hojas-vida.component').then(m => m.HojasVidaComponent),

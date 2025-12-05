@@ -1,0 +1,93 @@
+<div class="container">
+  <h2>Nuevo Backup</h2>
+
+  <form [formGroup]="backupForm" (ngSubmit)="guardarBackup()" class="form-grid">
+
+    <!-- Nombre del recurso -->
+    <div class="form-group full">
+      <label>Nombre del recurso:</label>
+      <input type="text" formControlName="nombre_recurso" />
+    </div>
+
+    <!-- Tipo de recurso -->
+    <div class="form-group">
+      <label>Tipo de recurso:</label>
+      <select formControlName="tipo_recurso">
+        <option *ngFor="let tipo of tiposRecurso" [value]="tipo">
+          {{ tipo }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Destino -->
+    <div class="form-group">
+      <label>Destino:</label>
+      <input type="text" formControlName="destino" />
+    </div>
+
+    <!-- Medio -->
+    <div class="form-group">
+      <label>Medio:</label>
+      <select formControlName="medio">
+        <option *ngFor="let m of medios" [value]="m">
+          {{ m }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Periodicidad -->
+    <div class="form-group">
+      <label>Periodicidad:</label>
+      <select formControlName="periodicidad">
+        <option *ngFor="let p of periodicidades" [value]="p">
+          {{ p }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Fecha de backup -->
+    <div class="form-group">
+      <label>Fecha del backup:</label>
+      <input type="date" formControlName="fecha_backup" />
+    </div>
+
+    <!-- Tamaño -->
+    <div class="form-group">
+      <label>Tamaño(Gb):</label>
+      <input type="text" formControlName="tamano" />
+    </div>
+
+    <!-- Autor solicita -->
+    <div class="form-group">
+      <label>Autor solicita:</label>
+      <input type="text" formControlName="autor_solicita" />
+    </div>
+
+    <!-- Número caso MS -->
+    <div class="form-group">
+      <label>Número caso MS:</label>
+      <input type="text" formControlName="numero_caso_ms" />
+    </div>
+
+    <!-- Caso MS -->
+    <div class="form-group">
+      <label>¿Caso MS?</label>
+      <select formControlName="caso_ms">
+        <option value="Si">Sí</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="form-group full">
+      <label>Observaciones:</label>
+      <textarea rows="3" formControlName="observaciones"></textarea>
+    </div>
+
+    <!-- Botón -->
+    <div class="form-group full center">
+      <button type="submit">Guardar backup</button>
+    </div>
+
+  </form>
+</div>
