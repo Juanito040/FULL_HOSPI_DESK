@@ -2,6 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MantenimientosService, Mantenimiento } from '../../services/mantenimientos.service';
 import { ActividadService } from '../../services/actividad.service';
+import { SysCatalogosService } from '../../services/sys-catalogos.service';
+import {
+  CatalogoItem,
+  getTipoMantenimientoLabel,
+  getTipoFallaLabel,
+  getTipoMantenimientoClass,
+  getTipoFallaClass
+} from '../../utils/sys-constants';
 
 @Component({
   selector: 'app-mantenimientos',
@@ -14,26 +22,56 @@ export class MantenimientosComponent implements OnInit {
   mantenimientos: Mantenimiento[] = [];
   filteredMantenimientos: Mantenimiento[] = [];
   searchTerm: string = '';
-  selectedTipo: string = '';
-  selectedEstado: string = '';
+  selectedTipo: number | null = null;
+  selectedFalla: number | null = null;
+
+  // Catálogos
+  tiposMantenimiento: CatalogoItem[] = [];
+  tiposFalla: CatalogoItem[] = [];
 
   // Estados de carga y error
   isLoading: boolean = false;
   error: string | null = null;
 
+  // Funciones helper expuestas para el template
+  getTipoMantenimientoLabel = getTipoMantenimientoLabel;
+  getTipoFallaLabel = getTipoFallaLabel;
+  getTipoMantenimientoClass = getTipoMantenimientoClass;
+  getTipoFallaClass = getTipoFallaClass;
+
   constructor(
     private mantenimientosService: MantenimientosService,
-    private actividadService: ActividadService
+    private actividadService: ActividadService,
+    private catalogosService: SysCatalogosService
   ) {}
 
   ngOnInit() {
+    this.loadCatalogos();
     this.loadMantenimientos();
+  }
+
+  /**
+   * Cargar catálogos desde el backend
+   */
+  loadCatalogos() {
+    this.catalogosService.getAllCatalogos().subscribe({
+      next: (catalogos) => {
+        this.tiposMantenimiento = catalogos.tiposMantenimiento;
+        this.tiposFalla = catalogos.tiposFalla;
+      },
+      error: (err) => {
+        console.error('Error al cargar catálogos:', err);
+        // Usar catálogos locales como fallback
+        this.tiposMantenimiento = this.catalogosService.getTiposMantenimientoLocal();
+        this.tiposFalla = this.catalogosService.getTiposFallaLocal();
+      }
+    });
   }
 
   /**
    * Cargar mantenimientos desde el backend
    */
-  loadMantenimientos(filters?: { tipo_mantenimiento?: string; estado?: string }) {
+  loadMantenimientos(filters?: { tipo_mantenimiento?: number; tipo_falla?: number }) {
     this.isLoading = true;
     this.error = null;
 
@@ -68,17 +106,17 @@ export class MantenimientosComponent implements OnInit {
    * Filtro por tipo de mantenimiento
    */
   onTipoChange(event: Event) {
-    const tipo = (event.target as HTMLSelectElement).value;
-    this.selectedTipo = tipo;
+    const value = (event.target as HTMLSelectElement).value;
+    this.selectedTipo = value ? parseInt(value) : null;
     this.applyBackendFilters();
   }
 
   /**
-   * Filtro por estado
+   * Filtro por tipo de falla
    */
-  onEstadoChange(event: Event) {
-    const estado = (event.target as HTMLSelectElement).value;
-    this.selectedEstado = estado;
+  onFallaChange(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.selectedFalla = value ? parseInt(value) : null;
     this.applyBackendFilters();
   }
 
@@ -88,7 +126,7 @@ export class MantenimientosComponent implements OnInit {
   applyBackendFilters() {
     const filters: any = {};
     if (this.selectedTipo) filters.tipo_mantenimiento = this.selectedTipo;
-    if (this.selectedEstado) filters.estado = this.selectedEstado;
+    if (this.selectedFalla) filters.tipo_falla = this.selectedFalla;
 
     if (Object.keys(filters).length > 0) {
       this.loadMantenimientos(filters);
@@ -107,9 +145,10 @@ export class MantenimientosComponent implements OnInit {
     if (this.searchTerm) {
       filtered = filtered.filter(mant =>
         mant.numero_reporte?.toLowerCase().includes(this.searchTerm) ||
-        mant.nombre_tecnico?.toLowerCase().includes(this.searchTerm) ||
-        mant.observaciones?.toLowerCase().includes(this.searchTerm) ||
-        mant.descripcion_falla?.toLowerCase().includes(this.searchTerm)
+        mant.autor_realizado?.toLowerCase().includes(this.searchTerm) ||
+        mant.autor_recibido?.toLowerCase().includes(this.searchTerm) ||
+        mant.observacionesh?.toLowerCase().includes(this.searchTerm) ||
+        mant.observacioness?.toLowerCase().includes(this.searchTerm)
       );
     }
 
@@ -143,31 +182,6 @@ export class MantenimientosComponent implements OnInit {
   }
 
   /**
-   * Clase CSS para el badge de tipo de mantenimiento
-   */
-  getTipoMantenimientoBadgeClass(tipo: string): string {
-    const classes: { [key: string]: string } = {
-      'Preventivo': 'badge badge-info',
-      'Correctivo': 'badge badge-warning',
-      'Predictivo': 'badge badge-primary',
-      'Otro': 'badge badge-secondary'
-    };
-    return classes[tipo] || 'badge badge-secondary';
-  }
-
-  /**
-   * Clase CSS para el badge de estado
-   */
-  getEstadoBadgeClass(estado: string): string {
-    const classes: { [key: string]: string } = {
-      'pendiente': 'badge badge-warning',
-      'en_proceso': 'badge badge-info',
-      'completado': 'badge badge-success'
-    };
-    return classes[estado] || 'badge badge-secondary';
-  }
-
-  /**
    * Formatear fecha para mostrar
    */
   formatFecha(fecha: string | undefined): string {
@@ -178,12 +192,5 @@ export class MantenimientosComponent implements OnInit {
       month: 'short',
       day: 'numeric'
     });
-  }
-
-  /**
-   * Formatear estado para mostrar
-   */
-  formatEstado(estado: string): string {
-    return estado === 'en_proceso' ? 'En proceso' : estado.charAt(0).toUpperCase() + estado.slice(1);
   }
 }

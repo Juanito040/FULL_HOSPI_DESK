@@ -44,23 +44,37 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     vendedor: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.STRING(150),
+      allowNull: true,
+      defaultValue: ''
     },
     tipo_uso: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      defaultValue: ''
     },
     fecha_compra: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true
     },
     fecha_instalacion: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    fecha_iniciooperacion: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    fecha_vencimientogarantia: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    fecha_update: {
+      type: DataTypes.DATEONLY,
       allowNull: true
     },
     costo_compra: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     contrato: {
@@ -68,7 +82,31 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     observaciones: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    departamento: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    direccion: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    emailinstitucion: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    municipio: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    nivelinstitucion: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    telefonoinstitucion: {
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     foto: {
@@ -78,18 +116,32 @@ module.exports = (sequelize, DataTypes) => {
     // Tipo de adquisición
     compraddirecta: {
       type: DataTypes.BOOLEAN,
+      allowNull: true,
       defaultValue: false
     },
     convenio: {
       type: DataTypes.BOOLEAN,
+      allowNull: true,
       defaultValue: false
     },
     donado: {
       type: DataTypes.BOOLEAN,
+      allowNull: true,
       defaultValue: false
     },
     comodato: {
       type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
+    asignadoporgobernacion: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
+    asignadoporministerio: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
       defaultValue: false
     },
     id_sysequipo_fk: {

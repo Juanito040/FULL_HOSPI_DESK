@@ -41,7 +41,7 @@
                 }
               </div>
 
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="activo">Estado</label>
                 <select id="activo" formControlName="activo" [class.error]="hasError('activo')">
                   <option [value]="1">Activo</option>
@@ -50,7 +50,7 @@
                 @if (hasError('activo')) {
                   <span class="error-message">{{ getErrorMessage('activo') }}</span>
                 }
-              </div>
+              </div> -->
             </div>
 
             <div class="form-row">
@@ -709,7 +709,7 @@
             <span class="spinner-small">⏳</span>
             <span>Guardando...</span>
           } @else {
-            <span>💾</span>
+            <span></span>
             <span>Guardar</span>
           }
         </button>

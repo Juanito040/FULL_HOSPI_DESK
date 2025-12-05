@@ -1,5 +1,9 @@
 const sysmantenimientoService = require('../services/sysmantenimiento.service');
 const { validationResult } = require('express-validator');
+const {
+  getAllTiposMantenimiento,
+  getAllTiposFalla
+} = require('../utils/sysConstants');
 
 class SysMantenimientoController {
 
@@ -260,6 +264,42 @@ class SysMantenimientoController {
       res.json({
         success: true,
         data: estadisticas
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/sysmantenimiento/catalogos/tipos-mantenimiento
+   * Obtener catálogo de tipos de mantenimiento
+   */
+  async getCatalogoTiposMantenimiento(req, res, next) {
+    try {
+      const tipos = getAllTiposMantenimiento();
+
+      res.json({
+        success: true,
+        data: tipos
+      });
+
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/sysmantenimiento/catalogos/tipos-falla
+   * Obtener catálogo de tipos de falla
+   */
+  async getCatalogoTiposFalla(req, res, next) {
+    try {
+      const tipos = getAllTiposFalla();
+
+      res.json({
+        success: true,
+        data: tipos
       });
 
     } catch (error) {

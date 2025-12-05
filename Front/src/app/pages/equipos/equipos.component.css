@@ -41,23 +41,51 @@
   cursor: pointer;
   transition: all 0.2s;
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.view-filter-btn i {
+  font-size: 1rem;
 }
 
 .view-filter-btn:hover:not(:disabled) {
   background-color: var(--gray-100);
   border-color: var(--gray-300);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .view-filter-btn.active {
-  background-color: #e3f2fd;
-  color: #1976d2;
-  border-color: #90caf9;
+  background: linear-gradient(135deg, #4c87c6 0%, #2f71c2 100%);
+  color: white;
+  border-color: transparent;
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .view-filter-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Badge de conteo */
+.badge-count {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.125rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.view-filter-btn:not(.active) .badge-count {
+  background-color: #1c37ad;
+  color: white;
 }
 
 .toolbar {
@@ -120,6 +148,31 @@
 
 .btn-icon:hover {
   background-color: var(--gray-100);
+}
+
+/* Botones con colores específicos */
+.btn-icon.btn-success {
+  color: #22c55e;
+}
+
+.btn-icon.btn-success:hover {
+  background-color: #dcfce7;
+}
+
+.btn-icon.btn-warning {
+  color: #f59e0b;
+}
+
+.btn-icon.btn-warning:hover {
+  background-color: #fef3c7;
+}
+
+.btn-icon.btn-danger {
+  color: #ef4444;
+}
+
+.btn-icon.btn-danger:hover {
+  background-color: #fee2e2;
 }
 
 .empty-state {

@@ -6,7 +6,7 @@
     </div>
     <button class="btn btn-primary">
       <span></span>
-      <span>Nuevo Mantenimiento</span>
+      <span>+ Nuevo Mantenimiento</span>
     </button>
   </div>
 
@@ -16,24 +16,23 @@
       <span class="search-icon"><i class="fas fa-search"></i></span>
       <input
         type="text"
-        placeholder="Buscar por reporte, equipo, técnico u observaciones..."
+        placeholder="Buscar por reporte, técnico u observaciones..."
         (input)="onSearch($event)"
         [disabled]="isLoading"
       />
     </div>
     <div class="filters">
       <select class="filter-select" (change)="onTipoChange($event)" [disabled]="isLoading">
-        <option value="">Todos los tipos</option>
-        <option value="Preventivo">Preventivo</option>
-        <option value="Correctivo">Correctivo</option>
-        <option value="Predictivo">Predictivo</option>
-        <option value="Otro">Otro</option>
+        <option value="">Todos los tipos de mantenimiento</option>
+        @for (tipo of tiposMantenimiento; track tipo.value) {
+          <option [value]="tipo.value">{{ tipo.label }}</option>
+        }
       </select>
-      <select class="filter-select" (change)="onEstadoChange($event)" [disabled]="isLoading">
-        <option value="">Todos los estados</option>
-        <option value="pendiente">Pendiente</option>
-        <option value="en_proceso">En proceso</option>
-        <option value="completado">Completado</option>
+      <select class="filter-select" (change)="onFallaChange($event)" [disabled]="isLoading">
+        <option value="">Todos los tipos de falla</option>
+        @for (falla of tiposFalla; track falla.value) {
+          <option [value]="falla.value">{{ falla.label }}</option>
+        }
       </select>
     </div>
   </div>
@@ -63,10 +62,10 @@
           <tr>
             <th>Reporte</th>
             <th>Fecha</th>
-            <th>Tipo</th>
-            <th>Falla</th>
-            <th>Técnico</th>
-            <th>Estado</th>
+            <th>Tipo Mantenimiento</th>
+            <th>Tipo Falla</th>
+            <th>Realizado Por</th>
+            <th>Tiempo Fuera (min)</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -76,29 +75,29 @@
               <td><strong>{{ mant.numero_reporte || 'N/A' }}</strong></td>
               <td>{{ formatFecha(mant.fecha) }}</td>
               <td>
-                <span [class]="getTipoMantenimientoBadgeClass(mant.tipo_mantenimiento || '')">
-                  {{ mant.tipo_mantenimiento || 'N/A' }}
+                <span [ngClass]="getTipoMantenimientoClass(mant.tipo_mantenimiento)" class="badge">
+                  {{ getTipoMantenimientoLabel(mant.tipo_mantenimiento) }}
                 </span>
               </td>
               <td>
-                @if (mant.tipo_falla) {
-                  <span class="falla-text">{{ mant.tipo_falla }}</span>
+                <span [ngClass]="getTipoFallaClass(mant.tipo_falla)" class="badge">
+                  {{ getTipoFallaLabel(mant.tipo_falla) }}
+                </span>
+              </td>
+              <td>{{ mant.autor_realizado || 'N/A' }}</td>
+              <td>
+                @if (mant.tiempo_fuera_servicio) {
+                  <span class="time-badge">{{ mant.tiempo_fuera_servicio }} min</span>
                 } @else {
                   <span class="text-muted">-</span>
                 }
-              </td>
-              <td>{{ mant.nombre_tecnico || 'N/A' }}</td>
-              <td>
-                <span [class]="getEstadoBadgeClass(mant.estado || '')">
-                  {{ formatEstado(mant.estado || 'pendiente') }}
-                </span>
               </td>
               <td>
                 <div class="action-buttons">
                   <button class="btn-icon" title="Ver detalles"><i class="fas fa-eye"></i></button>
                   <button class="btn-icon" title="Editar"><i class="fas fa-edit"></i></button>
-                  <button class="btn-icon" title="Generar PDF"><i class="fas fa-file"></i></button>
-                  <button class="btn-icon" title="Eliminar" (click)="deleteMantenimiento(mant.id_sysmtto!)"><i class="fas fa-trash"></i></button>
+                  <button class="btn-icon" title="Generar PDF"><i class="fas fa-file-pdf"></i></button>
+                  <button class="btn-icon btn-danger" title="Eliminar" (click)="deleteMantenimiento(mant.id_sysmtto!)"><i class="fas fa-trash"></i></button>
                 </div>
               </td>
             </tr>

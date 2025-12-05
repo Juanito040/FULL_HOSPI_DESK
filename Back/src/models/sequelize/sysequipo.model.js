@@ -13,15 +13,15 @@ module.exports = (sequelize) => {
     },
     marca: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     modelo: {
       type: DataTypes.STRING(255),
       allowNull: true
     },
     serie: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.STRING(80),
+      allowNull: false
     },
     placa_inventario: {
       type: DataTypes.STRING(255),
@@ -40,16 +40,15 @@ module.exports = (sequelize) => {
       allowNull: true
     },
     activo: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 1
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     },
     ano_ingreso: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DATEONLY,
       allowNull: true
     },
     dias_mantenimiento: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     periodicidad: {
@@ -57,27 +56,40 @@ module.exports = (sequelize) => {
       allowNull: true
     },
     estado_baja: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 0
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
     },
     administrable: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 0
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
     },
     direccionamiento_Vlan: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.STRING(30),
+      allowNull: true,
+      defaultValue: ' '
     },
     numero_puertos: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
+      defaultValue: 0
     },
     mtto: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 1
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    preventivo_s: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
+    },
+    fecha_modificacion: {
+      type: DataTypes.DATEONLY,
+      allowNull: true
+    },
+    ubicacion_anterior: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     },
     id_hospital_fk: {
       type: DataTypes.INTEGER,

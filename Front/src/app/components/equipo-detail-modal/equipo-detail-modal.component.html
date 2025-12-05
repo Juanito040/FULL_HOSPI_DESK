@@ -125,33 +125,34 @@
                     <div class="historial-header">
                       <div class="historial-title">
                         <strong>{{ mant.numero_reporte || 'Sin número' }}</strong>
-                        <span [class]="getTipoMantenimientoBadgeClass(mant.tipo_mantenimiento)">
-                          {{ mant.tipo_mantenimiento || 'N/A' }}
-                        </span>
-                        <span [class]="getEstadoMantenimientoBadgeClass(mant.estado)">
-                          {{ formatEstadoMantenimiento(mant.estado) }}
+                        <span [ngClass]="getTipoMantenimientoClass(mant.tipo_mantenimiento)" class="badge">
+                          {{ getTipoMantenimientoLabel(mant.tipo_mantenimiento) }}
                         </span>
                       </div>
                       <span class="historial-date">{{ formatDate(mant.fecha) }}</span>
                     </div>
                     @if (mant.tipo_falla) {
                       <div class="historial-detail">
-                        <strong>Falla:</strong> {{ mant.tipo_falla }}
+                        <strong>Falla:</strong>
+                        <span [ngClass]="getTipoFallaClass(mant.tipo_falla)" class="badge">
+                          {{ getTipoFallaLabel(mant.tipo_falla) }}
+                        </span>
                       </div>
                     }
-                    @if (mant.descripcion_falla) {
+                    @if (mant.observacionesh || mant.observacioness) {
                       <div class="historial-detail">
-                        <strong>Descripción:</strong> {{ mant.descripcion_falla }}
+                        <strong>Observaciones:</strong>
+                        @if (mant.observacionesh) {
+                          <div>Hardware: {{ mant.observacionesh }}</div>
+                        }
+                        @if (mant.observacioness) {
+                          <div>Software: {{ mant.observacioness }}</div>
+                        }
                       </div>
                     }
-                    @if (mant.observaciones) {
+                    @if (mant.autor_realizado) {
                       <div class="historial-detail">
-                        <strong>Observaciones:</strong> {{ mant.observaciones }}
-                      </div>
-                    }
-                    @if (mant.nombre_tecnico) {
-                      <div class="historial-detail">
-                        <strong>Técnico:</strong> 👤 {{ mant.nombre_tecnico }}
+                        <strong>Técnico:</strong> 👤 {{ mant.autor_realizado }}
                       </div>
                     }
                   </div>
@@ -173,11 +174,11 @@
           Cerrar
         </button>
         <button class="btn btn-secondary" (click)="printToPDF()" type="button">
-          <span>🖨️</span>
+          <span></span>
           <span>Imprimir / PDF</span>
         </button>
         <button class="btn btn-primary" (click)="requestEdit()" type="button">
-          <span>✏️</span>
+          <span></span>
           <span>Editar Equipo</span>
         </button>
       </div>

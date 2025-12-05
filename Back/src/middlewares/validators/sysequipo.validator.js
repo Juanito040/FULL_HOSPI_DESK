@@ -32,8 +32,18 @@ const sysEquipoValidator = [
     // 5. Año de ingreso (fecha/año)
     body('ano_ingreso')
         .optional({ nullable: true, checkFalsy: true })
-        .isInt({ min: 1900, max: 2100 }).withMessage('El año de ingreso debe ser válido (1900-2100)')
-        .toInt(),
+        .custom((value) => {
+            // Permitir null, undefined o vacío
+            if (value === null || value === undefined || value === '') {
+                return true;
+            }
+            // Si tiene valor, verificar que sea un año válido
+            const year = parseInt(value);
+            if (isNaN(year) || year < 1900 || year > 2100) {
+                throw new Error('El año de ingreso debe ser válido (1900-2100)');
+            }
+            return true;
+        }),
 
     // 6. Placa inventario (número/texto)
     body('placa_inventario')
@@ -67,9 +77,23 @@ const sysEquipoValidator = [
 
     // 11. Estado del equipo (0 = inactivo, 1 = activo)
     body('activo')
-        .optional()
-        .isInt({ min: 0, max: 1 }).withMessage('El estado del equipo debe ser 0 (inactivo) o 1 (activo)')
-        .toInt(),
+        .optional({ nullable: true })
+        .custom((value) => {
+            // Permitir null, undefined, vacío, boolean o números 0/1
+            if (value === null || value === undefined || value === '') {
+                return true;
+            }
+            // Convertir booleanos a números
+            if (typeof value === 'boolean') {
+                return true;
+            }
+            // Verificar si es 0, 1, "0", "1", true o false
+            const validValues = [0, 1, '0', '1', true, false];
+            if (validValues.includes(value)) {
+                return true;
+            }
+            throw new Error('El estado del equipo debe ser 0 (inactivo) o 1 (activo)');
+        }),
 
     // 12. Tipo de equipo (FK)
     body('id_tipo_equipo_fk')
@@ -97,14 +121,24 @@ const sysEquipoValidator = [
 
     // Otros campos opcionales
     body('estado_baja')
-        .optional()
-        .isInt({ min: 0, max: 1 }).withMessage('El estado de baja debe ser 0 o 1')
-        .toInt(),
+        .optional({ nullable: true })
+        .custom((value) => {
+            if (value === null || value === undefined || value === '') return true;
+            if (typeof value === 'boolean') return true;
+            const validValues = [0, 1, '0', '1', true, false];
+            if (validValues.includes(value)) return true;
+            throw new Error('El estado de baja debe ser 0 o 1');
+        }),
 
     body('administrable')
-        .optional()
-        .isInt({ min: 0, max: 1 }).withMessage('El campo administrable debe ser 0 o 1')
-        .toInt(),
+        .optional({ nullable: true })
+        .custom((value) => {
+            if (value === null || value === undefined || value === '') return true;
+            if (typeof value === 'boolean') return true;
+            const validValues = [0, 1, '0', '1', true, false];
+            if (validValues.includes(value)) return true;
+            throw new Error('El campo administrable debe ser 0 o 1');
+        }),
 
     body('direccionamiento_Vlan')
         .optional()

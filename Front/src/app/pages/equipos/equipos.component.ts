@@ -1,13 +1,14 @@
 
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { EquiposService, Equipo } from "../../services/equipos.service";
 import { ActividadService } from "../../services/actividad.service";
 import { NotificationService } from "../../services/notification.service";
+import { AuthService } from "../../services/auth.service";  // ✅ Nuevo
 import { EquipoModalComponent } from "../../components/equipo-modal/equipo-modal.component";
-import { ConfirmDialogComponent } from "../../components/confirm-dialog/confirm-dialog.component";
 import { EquipoDetailModalComponent } from "../../components/equipo-detail-modal/equipo-detail-modal.component";
-import { DeleteOptionsDialogComponent, DeleteAction } from "../../components/delete-options-dialog/delete-options-dialog.component";
+import { DeleteConfirmationDialogComponent, DeleteAction } from "../../components/delete-confirmation-dialog/delete-confirmation-dialog.component";
+import { ReactivarEquipoModalComponent, ReactivarEquipoData } from "../../components/reactivar-equipo-modal/reactivar-equipo-modal.component";
 
 @Component({
   selector: "app-equipos",
@@ -15,9 +16,9 @@ import { DeleteOptionsDialogComponent, DeleteAction } from "../../components/del
   imports: [
     CommonModule,
     EquipoModalComponent,
-    ConfirmDialogComponent,
     EquipoDetailModalComponent,
-    DeleteOptionsDialogComponent,
+    DeleteConfirmationDialogComponent,
+    ReactivarEquipoModalComponent,
   ],
   templateUrl: "./equipos.component.html",
   styleUrls: ["./equipos.component.css"],
@@ -29,6 +30,11 @@ export class EquiposComponent implements OnInit {
   selectedActivo: boolean | undefined = undefined;
   selectedView: 'all' | 'bodega' | 'baja' = 'all';
 
+  // Contadores para cada vista
+  totalEquipos: number = 0;
+  totalBodega: number = 0;
+  totalBaja: number = 0;
+
   // Estados de carga y error
   isLoading: boolean = false;
   error: string | null = null;
@@ -36,10 +42,6 @@ export class EquiposComponent implements OnInit {
   // Modal de edición/creación
   isModalOpen: boolean = false;
   selectedEquipo: Equipo | null = null;
-
-  // Modal de confirmación
-  isConfirmDialogOpen: boolean = false;
-  equipoToDelete: Equipo | null = null;
 
   // Modal de detalle
   isDetailModalOpen: boolean = false;
@@ -49,15 +51,50 @@ export class EquiposComponent implements OnInit {
   isDeleteOptionsDialogOpen: boolean = false;
   equipoToDeleteWithOptions: Equipo | null = null;
 
+  // Modal de reactivar equipo
+  isReactivarModalOpen: boolean = false;
+  equipoToReactivar: Equipo | null = null;
+  
+  // Referencia al componente de diálogo para control de errores
+  @ViewChild(DeleteConfirmationDialogComponent) deleteDialog!: DeleteConfirmationDialogComponent;
+
   constructor(
     private equiposService: EquiposService,
     private actividadService: ActividadService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private authService: AuthService  // ✅ Nuevo
   ) {}
 
   ngOnInit() {
     this.loadEquipos();
-    
+    this.loadCounters();
+  }
+
+  /**
+   * Cargar contadores para las vistas
+   */
+  loadCounters() {
+    // Cargar contador de bodega
+    this.equiposService.getEquiposEnBodega().subscribe({
+      next: (response) => {
+        if (response.success) {
+          const data = Array.isArray(response.data) ? response.data : [response.data];
+          this.totalBodega = data.length;
+        }
+      },
+      error: (err) => console.error('Error al cargar contador de bodega:', err)
+    });
+
+    // Cargar contador de dados de baja
+    this.equiposService.getEquiposDadosDeBaja().subscribe({
+      next: (response) => {
+        if (response.success) {
+          const data = Array.isArray(response.data) ? response.data : [response.data];
+          this.totalBaja = data.length;
+        }
+      },
+      error: (err) => console.error('Error al cargar contador de baja:', err)
+    });
   }
 
   /**
@@ -74,6 +111,7 @@ export class EquiposComponent implements OnInit {
             ? response.data
             : [response.data];
           this.filteredEquipos = this.equipos;
+          this.totalEquipos = this.equipos.length;
         } else {
           this.error = response.message || "Error al cargar los equipos";
         }
@@ -119,6 +157,12 @@ export class EquiposComponent implements OnInit {
     this.selectedView = view;
     this.isLoading = true;
     this.error = null;
+    
+    // Resetear filtros al cambiar de vista
+    this.searchTerm = '';
+    this.selectedActivo = undefined;
+    this.resetSearchInput();
+    this.resetEstadoSelect();
 
     if (view === 'bodega') {
       this.equiposService.getEquiposEnBodega().subscribe({
@@ -126,6 +170,7 @@ export class EquiposComponent implements OnInit {
           if (response.success) {
             this.equipos = Array.isArray(response.data) ? response.data : [response.data];
             this.filteredEquipos = this.equipos;
+            this.totalBodega = this.equipos.length;
           } else {
             this.error = response.message || 'Error al cargar equipos en bodega';
           }
@@ -143,6 +188,7 @@ export class EquiposComponent implements OnInit {
           if (response.success) {
             this.equipos = Array.isArray(response.data) ? response.data : [response.data];
             this.filteredEquipos = this.equipos;
+            this.totalBaja = this.equipos.length;
           } else {
             this.error = response.message || 'Error al cargar equipos dados de baja';
           }
@@ -181,6 +227,26 @@ export class EquiposComponent implements OnInit {
 
     this.filteredEquipos = filtered;
   }
+
+  /**
+   * Resetear el input de búsqueda
+   */
+  resetSearchInput() {
+    const searchInput = document.querySelector('.search-box input') as HTMLInputElement;
+    if (searchInput) {
+      searchInput.value = '';
+    }
+  }
+
+  /**
+   * Resetear el select de estado
+   */
+  resetEstadoSelect() {
+    const estadoSelect = document.querySelector('.filter-select') as HTMLSelectElement;
+    if (estadoSelect) {
+      estadoSelect.value = '';
+    }
+  }
   
 
   /**
@@ -194,49 +260,85 @@ export class EquiposComponent implements OnInit {
   /**
    * Manejar la confirmación del diálogo de opciones
    */
-  handleDeleteOptionsConfirm(event: { action: DeleteAction; data: any }) {
+  handleDeleteOptionsConfirm(deleteAction: DeleteAction) {
     if (!this.equipoToDeleteWithOptions || !this.equipoToDeleteWithOptions.id_sysequipo) return;
 
     const id = this.equipoToDeleteWithOptions.id_sysequipo;
     const nombreEquipo = this.equipoToDeleteWithOptions.nombre_equipo || 'Equipo desconocido';
 
-    if (event.action === 'bodega') {
+    if (deleteAction.action === 'bodega') {
       // Enviar a bodega
-      this.equiposService.enviarABodega(id, event.data.motivo).subscribe({
+      this.equiposService.enviarABodega(id, deleteAction.data.motivo).subscribe({
         next: (response) => {
           if (response.success) {
             this.actividadService.equipoEliminado(`${nombreEquipo} - Enviado a bodega`);
             this.notificationService.success(`Equipo "${nombreEquipo}" enviado a bodega exitosamente`);
             this.loadEquipos();
+            this.loadCounters();
+            this.closeDeleteOptionsDialog();
           } else {
             this.notificationService.error(response.message || 'Error al enviar el equipo a bodega');
+            if (this.deleteDialog) {
+              this.deleteDialog.showError(response.message || 'Error al enviar el equipo a bodega');
+            }
           }
         },
         error: (err) => {
           console.error('Error al enviar a bodega:', err);
-          this.notificationService.error('Error al conectar con el servidor. Por favor, intente nuevamente.');
+          const errorMessage = err.error?.message || 'Error al conectar con el servidor. Por favor, intente nuevamente.';
+          this.notificationService.error(errorMessage);
+          
+          // Mostrar error en el diálogo sin cerrarlo
+          if (this.deleteDialog) {
+            this.deleteDialog.showError(errorMessage);
+          }
         }
       });
-    } else if (event.action === 'baja') {
-      // Dar de baja
-      this.equiposService.darDeBaja(id, event.data).subscribe({
+    } else if (deleteAction.action === 'baja') {
+      // Dar de baja - asegurar que justificacion_baja existe
+      const bajaData = {
+        justificacion_baja: deleteAction.data.justificacion_baja || '',
+        accesorios_reutilizables: deleteAction.data.accesorios_reutilizables,
+        id_usuario: deleteAction.data.id_usuario,
+        password: deleteAction.data.password
+      };
+      
+      this.equiposService.darDeBaja(id, bajaData).subscribe({
         next: (response) => {
           if (response.success) {
             this.actividadService.equipoEliminado(`${nombreEquipo} - Dado de baja`);
             this.notificationService.success(`Equipo "${nombreEquipo}" dado de baja exitosamente`);
             this.loadEquipos();
+            this.loadCounters();
+            this.closeDeleteOptionsDialog();
           } else {
             this.notificationService.error(response.message || 'Error al dar de baja el equipo');
+            if (this.deleteDialog) {
+              this.deleteDialog.showError(response.message || 'Error al dar de baja el equipo');
+            }
           }
         },
         error: (err) => {
           console.error('Error al dar de baja:', err);
-          this.notificationService.error('Error al conectar con el servidor. Por favor, intente nuevamente.');
+          
+          // Manejar específicamente el error 401 de contraseña incorrecta
+          let errorMessage = 'Error al conectar con el servidor. Por favor, intente nuevamente.';
+          
+          if (err.status === 401) {
+            errorMessage = err.error?.message || 'Contraseña incorrecta';
+          } else if (err.error?.message) {
+            errorMessage = err.error.message;
+          }
+          
+          this.notificationService.error(errorMessage);
+          
+          // Mostrar error en el diálogo sin cerrarlo
+          if (this.deleteDialog) {
+            this.deleteDialog.showError(errorMessage);
+          }
         }
       });
     }
-
-    this.closeDeleteOptionsDialog();
   }
 
   /**
@@ -245,67 +347,48 @@ export class EquiposComponent implements OnInit {
   closeDeleteOptionsDialog() {
     this.isDeleteOptionsDialogOpen = false;
     this.equipoToDeleteWithOptions = null;
+
+    // Limpiar el campo de búsqueda si tiene valores no deseados por autocomplete del navegador
+    this.cleanSearchInputIfNeeded();
   }
 
   /**
-   * Abrir diálogo de confirmación para eliminar (deprecated)
-   * @deprecated Usar confirmDelete con DeleteOptionsDialog
+   * Limpiar el campo de búsqueda si contiene valores no deseados
    */
-  confirmDeleteOld(equipo: Equipo) {
-    this.equipoToDelete = equipo;
-    this.isConfirmDialogOpen = true;
+  private cleanSearchInputIfNeeded() {
+    const searchInput = document.querySelector('.search-box input') as HTMLInputElement;
+    if (searchInput && searchInput.value && !this.searchTerm) {
+      // Si el input tiene un valor pero searchTerm está vacío, el navegador lo autocompletó incorrectamente
+      searchInput.value = '';
+    }
   }
 
-  /**
-   * Eliminar un equipo (después de confirmación) (deprecated)
-   * @deprecated Usar handleDeleteOptionsConfirm
-   */
-  deleteEquipo() {
-    if (!this.equipoToDelete || !this.equipoToDelete.id_sysequipo) return;
-
-    const nombreEquipo = this.equipoToDelete.nombre_equipo || 'Equipo desconocido';
-
-    this.equiposService
-      .deleteEquipo(this.equipoToDelete.id_sysequipo)
-      .subscribe({
-        next: (response) => {
-          if (response.success) {
-            // Registrar actividad
-            this.actividadService.equipoEliminado(nombreEquipo);
-            this.loadEquipos(); // Recargar la lista
-            this.closeConfirmDialog();
-          } else {
-            alert("Error al eliminar el equipo");
-          }
-        },
-        error: (err) => {
-          console.error("Error al eliminar equipo:", err);
-          alert("Error al conectar con el servidor");
-        },
-      });
-  }
 
   /**
-   * Cerrar diálogo de confirmación (deprecated)
-   * @deprecated Usar closeDeleteOptionsDialog
+   * Verificar si el usuario actual es administrador
    */
-  closeConfirmDialog() {
-    this.isConfirmDialogOpen = false;
-    this.equipoToDelete = null;
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   /**
    * Clase CSS para el badge de estado
    */
   getEstadoBadgeClass(activo: number | undefined): string {
-    return `badge badge-${activo === 1 ? "success" : "danger"}`;
+    // Convertir a número y verificar si es 1 (activo)
+    // Esto maneja: number (0/1), boolean (true/false), string ('0'/'1'), undefined
+    const isActive = Number(activo) === 1;
+    return `badge badge-${isActive ? "success" : "danger"}`;
   }
 
   /**
    * Formatear estado (activo/inactivo)
    */
   formatEstado(activo: number | undefined): string {
-    return activo === 1 ? "Activo" : "Inactivo";
+    // Convertir a número y verificar si es 1 (activo)
+    // Esto maneja: number (0/1), boolean (true/false), string ('0'/'1'), undefined
+    const isActive = Number(activo) === 1;
+    return isActive ? "Activo" : "Inactivo";
   }
 
   /**
@@ -369,5 +452,85 @@ export class EquiposComponent implements OnInit {
     this.closeDetailModal();
     this.openEditModal(equipo);
   }
-  
+
+  /**
+   * Abrir modal para reactivar equipo
+   */
+  reactivarEquipo(equipo: Equipo) {
+    if (!equipo.id_sysequipo) return;
+    this.equipoToReactivar = equipo;
+    this.isReactivarModalOpen = true;
+  }
+
+  /**
+   * Cerrar modal de reactivar
+   */
+  closeReactivarModal() {
+    this.isReactivarModalOpen = false;
+    this.equipoToReactivar = null;
+  }
+
+  /**
+   * Manejar confirmación de reactivación
+   */
+  handleReactivarConfirm(data: ReactivarEquipoData) {
+    if (!this.equipoToReactivar || !this.equipoToReactivar.id_sysequipo) return;
+
+    const equipoId = this.equipoToReactivar.id_sysequipo;
+    const equipoNombre = this.equipoToReactivar.nombre_equipo;
+    const ubicacionFinal = data.ubicacion;
+
+    this.equiposService.reactivarEquipo(equipoId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Actualizar la ubicación si es necesaria
+          if (ubicacionFinal !== 'Bodega') {
+            this.equiposService.updateEquipo(equipoId, {
+              ubicacion: ubicacionFinal
+            }).subscribe({
+              next: () => {
+                this.notificationService.success(
+                  `Equipo "${equipoNombre}" reactivado exitosamente\nNueva ubicación: ${ubicacionFinal}`
+                );
+                this.actividadService.equipoEliminado(
+                  `${equipoNombre} - Reactivado desde bodega → ${ubicacionFinal}`
+                );
+                this.closeReactivarModal();
+                this.changeView('bodega');
+                this.loadCounters();
+              },
+              error: (err) => {
+                console.error('Error al actualizar ubicación:', err);
+                this.notificationService.warning(
+                  'Equipo reactivado, pero hubo un error al cambiar la ubicación'
+                );
+                this.closeReactivarModal();
+                this.changeView('bodega');
+                this.loadCounters();
+              }
+            });
+          } else {
+            this.notificationService.success(
+              `Equipo "${equipoNombre}" reactivado en bodega`
+            );
+            this.actividadService.equipoEliminado(
+              `${equipoNombre} - Reactivado en bodega (activo)`
+            );
+            this.closeReactivarModal();
+            this.changeView('bodega');
+            this.loadCounters();
+          }
+        } else {
+          this.notificationService.error(response.message || 'Error al reactivar el equipo');
+          this.closeReactivarModal();
+        }
+      },
+      error: (err) => {
+        console.error('Error al reactivar equipo:', err);
+        this.notificationService.error('Error al conectar con el servidor');
+        this.closeReactivarModal();
+      }
+    });
+  }
+
 }

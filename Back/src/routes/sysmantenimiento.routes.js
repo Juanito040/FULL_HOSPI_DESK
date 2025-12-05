@@ -10,6 +10,10 @@ const {
   dateRangeValidator
 } = require('../middlewares/validators/sysmantenimiento.validator');
 
+// Catálogos (deben ir primero para evitar conflictos con rutas dinámicas)
+router.get('/catalogos/tipos-mantenimiento', sysmantenimientoController.getCatalogoTiposMantenimiento);
+router.get('/catalogos/tipos-falla', sysmantenimientoController.getCatalogoTiposFalla);
+
 // Dashboard y estadísticas
 router.get('/dashboard', sysmantenimientoController.getDashboard);
 router.get('/estadisticas/tipo', dateRangeValidator, sysmantenimientoController.getEstadisticasTipo);

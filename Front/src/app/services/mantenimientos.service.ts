@@ -7,26 +7,35 @@ export interface Mantenimiento {
   id_sysmtto?: number;
   numero_reporte?: string;
   fecha?: string;
+  hora_llamado?: string;
   hora_inicio?: string;
-  hora_fin?: string;
-  tipo_mantenimiento?: 'Correctivo' | 'Preventivo' | 'Predictivo' | 'Otro';
-  tipo_falla?: 'Falla de hardware' | 'Falla de software' | 'Falla de red' | 'Falla eléctrica' | 'Otro';
-  descripcion_falla?: string;
-  mphardware?: string;
-  mpsoftware?: string;
-  observaciones?: string;
-  recomendaciones?: string;
-  estado?: 'pendiente' | 'en_proceso' | 'completado';
+  hora_terminacion?: string;
+  // Cambio de ENUM a INT
+  tipo_mantenimiento?: number; // 1=Correctivo, 2=Preventivo, 3=Predictivo, 4=Otro
+  tipo_falla?: number; // 1=Desgaste, 2=Operación Indebida, 3=Causa Externa, 4=Accesorios, 5=Desconocido, 6=Sin Falla, 7=Otros, 8=No Registra
+  // Cambio de string a boolean
+  mphardware?: boolean;
+  mpsoftware?: boolean;
+  dano?: boolean;
+  entega?: boolean;
+  // Campos de texto
+  rutinah?: string;
+  rutinas?: string;
+  observacionesh?: string;
+  observacioness?: string;
+  autor_realizado?: string;
+  autor_recibido?: string;
+  tiempo_fuera_servicio?: number;
+  // Rutas de archivos
+  rutahardware?: string;
+  rutasoftware?: string;
+  rutaentrega?: string;
+  // Foreign keys
   id_sysequipo_fk?: number;
   id_sysusuario_fk?: number;
-  nombre_tecnico?: string;
-  cargo?: string;
-  firma?: string;
-  pdf_mantenimiento?: string;
-  pdf_verificacion?: string;
-  pdf_diagnostico?: string;
-  created_by?: string;
-  updated_by?: string;
+  // Timestamps
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface MantenimientoResponse {
@@ -55,18 +64,18 @@ export class MantenimientosService {
    * Obtener todos los mantenimientos
    */
   getMantenimientos(filters?: {
-    tipo_mantenimiento?: string;
-    tipo_falla?: string;
-    estado?: string;
+    tipo_mantenimiento?: number;
+    tipo_falla?: number;
+    id_equipo?: number;
     fecha_inicio?: string;
     fecha_fin?: string;
   }): Observable<MantenimientoResponse> {
     let params = new HttpParams();
 
     if (filters) {
-      if (filters.tipo_mantenimiento) params = params.set('tipo_mantenimiento', filters.tipo_mantenimiento);
-      if (filters.tipo_falla) params = params.set('tipo_falla', filters.tipo_falla);
-      if (filters.estado) params = params.set('estado', filters.estado);
+      if (filters.tipo_mantenimiento) params = params.set('tipo_mantenimiento', filters.tipo_mantenimiento.toString());
+      if (filters.tipo_falla) params = params.set('tipo_falla', filters.tipo_falla.toString());
+      if (filters.id_equipo) params = params.set('id_equipo', filters.id_equipo.toString());
       if (filters.fecha_inicio) params = params.set('fecha_inicio', filters.fecha_inicio);
       if (filters.fecha_fin) params = params.set('fecha_fin', filters.fecha_fin);
     }

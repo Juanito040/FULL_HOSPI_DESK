@@ -51,8 +51,10 @@ const getAllSysEquipos = async (req, res, next) => {
         // Excluir equipos en bodega y dados de baja de la lista principal
         where[Op.and] = [
             { [Op.or]: [{ ubicacion: { [Op.ne]: 'Bodega' } }, { ubicacion: null }] },
-            { [Op.or]: [{ estado_baja: { [Op.ne]: 1 } }, { estado_baja: null }] }
+            { [Op.or]: [{ estado_baja: { [Op.ne]: 1 } }, { estado_baja: null }, { estado_baja: 0 }] }
         ];
+
+        console.log('🔍 Filtros aplicados en getAllSysEquipos:', JSON.stringify(where, null, 2));
 
         // Calcular offset
         const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -293,8 +295,10 @@ const updateSysEquipo = async (req, res, next) => {
 
         if (!errors.isEmpty()) {
             await transaction.rollback();
+            console.error('❌ Errores de validación:', errors.array());
             return res.status(400).json({
                 success: false,
+                message: 'Errores de validación',
                 errors: errors.array()
             });
         }
@@ -302,19 +306,39 @@ const updateSysEquipo = async (req, res, next) => {
         // Extraer datos del equipo y hoja de vida del body
         const { hojaVida, ...equipoData } = req.body;
 
-        // Actualizar el equipo
-        const [affectedRows] = await db.SysEquipo.update(equipoData, {
-            where: { id_sysequipo: id },
-            transaction
-        });
+        // Convertir campos booleanos a números enteros
+        if (equipoData.activo !== undefined) {
+            equipoData.activo = equipoData.activo ? 1 : 0;
+        }
+        if (equipoData.estado_baja !== undefined) {
+            equipoData.estado_baja = equipoData.estado_baja ? 1 : 0;
+        }
+        if (equipoData.administrable !== undefined) {
+            equipoData.administrable = equipoData.administrable ? 1 : 0;
+        }
+        if (equipoData.preventivo_s !== undefined) {
+            equipoData.preventivo_s = equipoData.preventivo_s ? 1 : 0;
+        }
 
-        if (affectedRows === 0) {
+        console.log('📝 Datos a actualizar:', equipoData);
+
+        // Verificar que el equipo existe antes de actualizar
+        const equipoExistente = await db.SysEquipo.findByPk(id);
+        if (!equipoExistente) {
             await transaction.rollback();
             return res.status(404).json({
                 success: false,
                 message: 'Equipo de sistemas no encontrado'
             });
         }
+
+        // Actualizar el equipo
+        const [affectedRows] = await db.SysEquipo.update(equipoData, {
+            where: { id_sysequipo: id },
+            transaction
+        });
+
+        console.log('✅ Filas afectadas:', affectedRows);
 
         // Si se proporcionan datos de hoja de vida, actualizarla o crearla
         if (hojaVida && Object.keys(hojaVida).length > 0) {
@@ -328,17 +352,20 @@ const updateSysEquipo = async (req, res, next) => {
                     where: { id_sysequipo_fk: id },
                     transaction
                 });
+                console.log('✅ Hoja de vida actualizada');
             } else {
                 // Crear nueva hoja de vida
                 await db.SysHojaVida.create({
                     ...hojaVida,
                     id_sysequipo_fk: id
                 }, { transaction });
+                console.log('✅ Hoja de vida creada');
             }
         }
 
         // Confirmar la transacción
         await transaction.commit();
+        console.log('✅ Transacción confirmada');
 
         // Obtener el equipo actualizado con todas las relaciones
         const equipo = await db.SysEquipo.findByPk(id, {
@@ -377,7 +404,16 @@ const updateSysEquipo = async (req, res, next) => {
         });
     } catch (error) {
         await transaction.rollback();
-        next(error);
+        console.error('❌ Error al actualizar equipo:', error.message);
+        console.error('Stack:', error.stack);
+
+        // Enviar error al cliente con más detalle
+        return res.status(500).json({
+            success: false,
+            message: 'Error al actualizar el equipo de sistemas',
+            error: error.message,
+            details: error.errors ? error.errors.map(e => e.message) : []
+        });
     }
 };
 
@@ -388,8 +424,27 @@ const patchSysEquipo = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        console.log('🔄 PATCH request recibido para equipo ID:', id);
+        console.log('📦 Body recibido:', JSON.stringify(req.body, null, 2));
+
         // Extraer datos del equipo y hoja de vida del body
         const { hojaVida, ...equipoData } = req.body;
+
+        // Convertir campos booleanos a números enteros
+        if (equipoData.activo !== undefined) {
+            equipoData.activo = equipoData.activo ? 1 : 0;
+        }
+        if (equipoData.estado_baja !== undefined) {
+            equipoData.estado_baja = equipoData.estado_baja ? 1 : 0;
+        }
+        if (equipoData.administrable !== undefined) {
+            equipoData.administrable = equipoData.administrable ? 1 : 0;
+        }
+        if (equipoData.preventivo_s !== undefined) {
+            equipoData.preventivo_s = equipoData.preventivo_s ? 1 : 0;
+        }
+
+        console.log('📝 Datos del equipo a actualizar (después de conversión):', JSON.stringify(equipoData, null, 2));
 
         // Actualizar el equipo si hay datos
         if (Object.keys(equipoData).length > 0) {
@@ -398,8 +453,11 @@ const patchSysEquipo = async (req, res, next) => {
                 transaction
             });
 
+            console.log('✅ Filas afectadas en la actualización:', affectedRows);
+
             if (affectedRows === 0) {
                 await transaction.rollback();
+                console.log('❌ No se encontró el equipo con ID:', id);
                 return res.status(404).json({
                     success: false,
                     message: 'Equipo de sistemas no encontrado'
@@ -430,6 +488,7 @@ const patchSysEquipo = async (req, res, next) => {
 
         // Confirmar la transacción
         await transaction.commit();
+        console.log('✅ Transacción COMMIT exitoso');
 
         // Obtener el equipo actualizado con todas las relaciones
         const equipo = await db.SysEquipo.findByPk(id, {
@@ -461,6 +520,8 @@ const patchSysEquipo = async (req, res, next) => {
             ]
         });
 
+        console.log('📊 Equipo después de la actualización - activo:', equipo?.activo);
+
         res.json({
             success: true,
             message: 'Equipo de sistemas actualizado exitosamente',
@@ -468,6 +529,7 @@ const patchSysEquipo = async (req, res, next) => {
         });
     } catch (error) {
         await transaction.rollback();
+        console.error('❌ Error en PATCH, haciendo ROLLBACK:', error.message);
         next(error);
     }
 };
@@ -490,8 +552,10 @@ const deleteSysEquipo = async (req, res, next) => {
         await db.SysEquipo.update(
             {
                 activo: 0,
+                ubicacion_anterior: equipo.ubicacion,  // ✅ Guardar ubicación actual antes de cambiar
                 ubicacion: 'Bodega',
-                ubicacion_especifica: motivo || 'Enviado a bodega'
+                ubicacion_especifica: motivo || 'Enviado a bodega',
+                estado_baja: 0  // ✅ Asegurar que NO esté marcado como dado de baja
             },
             { where: { id_sysequipo: id } }
         );
@@ -514,7 +578,25 @@ const hardDeleteSysEquipo = async (req, res, next) => {
 
     try {
         const { id } = req.params;
-        const { justificacion_baja, accesorios_reutilizables, id_usuario } = req.body;
+        const { justificacion_baja, accesorios_reutilizables, id_usuario, password } = req.body;
+
+        // Validar que el usuario sea administrador
+        if (req.user && req.user.rol && req.user.rol.nombre !== 'Administrador') {
+            await transaction.rollback();
+            return res.status(403).json({
+                success: false,
+                message: 'No tienes permisos para dar de baja equipos permanentemente. Solo los administradores pueden realizar esta acción.'
+            });
+        }
+
+        // Validar contraseña de administrador
+        if (password && password !== 'admin') {
+            await transaction.rollback();
+            return res.status(401).json({
+                success: false,
+                message: 'Contraseña incorrecta'
+            });
+        }
 
         const equipo = await db.SysEquipo.findByPk(id);
 
@@ -584,7 +666,10 @@ const reactivarSysEquipo = async (req, res, next) => {
         const { id } = req.params;
 
         const [affectedRows] = await db.SysEquipo.update(
-            { activo: true },
+            {
+                activo: true,
+                estado_baja: 0  // ✅ Limpiar estado de baja al reactivar
+            },
             { where: { id_sysequipo: id } }
         );
 
@@ -617,6 +702,7 @@ const darDeBajaSysEquipo = async (req, res, next) => {
             {
                 activo: false,
                 estado: 'baja',
+                estado_baja: 1,  // ✅ Marcar explícitamente como dado de baja para filtrado correcto
                 motivo_baja,
                 fecha_baja: new Date()
             },
@@ -761,11 +847,21 @@ const getSysEquiposPorTipo = async (req, res, next) => {
 // Obtener equipos en bodega
 const getEquiposEnBodega = async (req, res, next) => {
     try {
+        console.log('📦 Buscando equipos en bodega...');
+
         const equipos = await db.SysEquipo.findAll({
             where: {
-                activo: 0,
                 ubicacion: 'Bodega',
-                estado_baja: 0
+                [db.Sequelize.Op.and]: [
+                    {
+                        [db.Sequelize.Op.or]: [
+                            { estado_baja: { [db.Sequelize.Op.ne]: 1 } },
+                            { estado_baja: null },
+                            { estado_baja: 0 }
+                        ]
+                    }
+                ]
+                // Solo equipos en bodega que NO estén dados de baja
             },
             include: [
                 {
@@ -792,12 +888,15 @@ const getEquiposEnBodega = async (req, res, next) => {
             order: [['updatedAt', 'DESC']]
         });
 
+        console.log(`✅ Encontrados ${equipos.length} equipos en bodega`);
+
         res.json({
             success: true,
             data: equipos,
             count: equipos.length
         });
     } catch (error) {
+        console.error('❌ Error al buscar equipos en bodega:', error.message);
         next(error);
     }
 };
@@ -805,10 +904,13 @@ const getEquiposEnBodega = async (req, res, next) => {
 // Obtener equipos dados de baja
 const getEquiposDadosDeBaja = async (req, res, next) => {
     try {
+        console.log('🚫 Buscando equipos dados de baja...');
+
         const equipos = await db.SysEquipo.findAll({
             where: {
                 estado_baja: 1
             },
+            distinct: true,  // Evitar duplicados por múltiples registros en sysbaja
             include: [
                 {
                     model: db.Hospital,
@@ -845,12 +947,20 @@ const getEquiposDadosDeBaja = async (req, res, next) => {
             order: [['updatedAt', 'DESC']]
         });
 
+        console.log(`✅ Encontrados ${equipos.length} equipos dados de baja`);
+
+        // Log detallado de equipos para debugging
+        equipos.forEach(e => {
+            console.log(`  - ID: ${e.id_sysequipo} | ${e.nombre_equipo} | Serie: ${e.serie} | Ubicación: ${e.ubicacion}`);
+        });
+
         res.json({
             success: true,
             data: equipos,
             count: equipos.length
         });
     } catch (error) {
+        console.error('❌ Error al buscar equipos dados de baja:', error.message);
         next(error);
     }
 };

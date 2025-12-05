@@ -1,4 +1,5 @@
 const { body, param, query } = require('express-validator');
+const { isValidTipoMantenimiento, isValidTipoFalla } = require('../../utils/sysConstants');
 
 const createMantenimientoValidator = [
   body('id_sysequipo_fk')
@@ -14,13 +15,25 @@ const createMantenimientoValidator = [
 
   body('tipo_mantenimiento')
     .optional()
-    .isIn(['Correctivo', 'Preventivo', 'Predictivo', 'Otro'])
-    .withMessage('Tipo de mantenimiento inválido'),
+    .isInt({ min: 1, max: 4 })
+    .withMessage('Tipo de mantenimiento inválido (debe ser 1-4)')
+    .custom((value) => {
+      if (value && !isValidTipoMantenimiento(value)) {
+        throw new Error('Tipo de mantenimiento no válido');
+      }
+      return true;
+    }),
 
   body('tipo_falla')
     .optional()
-    .isIn(['Desgaste', 'Operación Indebida', 'Causa Externa', 'Accesorios', 'Desconocido', 'Sin Falla', 'Otros', 'No Registra'])
-    .withMessage('Tipo de falla inválido'),
+    .isInt({ min: 1, max: 8 })
+    .withMessage('Tipo de falla inválido (debe ser 1-8)')
+    .custom((value) => {
+      if (value && !isValidTipoFalla(value)) {
+        throw new Error('Tipo de falla no válido');
+      }
+      return true;
+    }),
 
   body('hora_llamado')
     .optional()
@@ -60,13 +73,25 @@ const updateMantenimientoValidator = [
 
   body('tipo_mantenimiento')
     .optional()
-    .isIn(['Correctivo', 'Preventivo', 'Predictivo', 'Otro'])
-    .withMessage('Tipo de mantenimiento inválido'),
+    .isInt({ min: 1, max: 4 })
+    .withMessage('Tipo de mantenimiento inválido (debe ser 1-4)')
+    .custom((value) => {
+      if (value && !isValidTipoMantenimiento(value)) {
+        throw new Error('Tipo de mantenimiento no válido');
+      }
+      return true;
+    }),
 
   body('tipo_falla')
     .optional()
-    .isIn(['Desgaste', 'Operación Indebida', 'Causa Externa', 'Accesorios', 'Desconocido', 'Sin Falla', 'Otros', 'No Registra'])
-    .withMessage('Tipo de falla inválido'),
+    .isInt({ min: 1, max: 8 })
+    .withMessage('Tipo de falla inválido (debe ser 1-8)')
+    .custom((value) => {
+      if (value && !isValidTipoFalla(value)) {
+        throw new Error('Tipo de falla no válido');
+      }
+      return true;
+    }),
 
   body('hora_llamado')
     .optional()

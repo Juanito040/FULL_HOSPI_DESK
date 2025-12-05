@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
     },
     nombre_equipo: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     marca: {
       type: DataTypes.STRING(255),
@@ -28,13 +28,12 @@ module.exports = (sequelize) => {
       allowNull: true
     },
     observaciones: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     activo: {
-      type: DataTypes.TINYINT,
-      allowNull: false,
-      defaultValue: 1
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     },
     id_sys_equipo_fk: {
       type: DataTypes.INTEGER,

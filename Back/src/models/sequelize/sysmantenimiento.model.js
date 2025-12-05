@@ -28,30 +28,32 @@ module.exports = (sequelize) => {
       allowNull: true
     },
     tipo_mantenimiento: {
-      type: DataTypes.ENUM('Correctivo', 'Preventivo', 'Predictivo', 'Otro'),
-      allowNull: true
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: '1=Correctivo, 2=Preventivo, 3=Predictivo, 4=Otro'
     },
     tipo_falla: {
-      type: DataTypes.ENUM('Desgaste', 'Operación Indebida', 'Causa Externa', 'Accesorios', 'Desconocido', 'Sin Falla', 'Otros', 'No Registra'),
-      allowNull: true
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: '1=Desgaste, 2=Operación Indebida, 3=Causa Externa, 4=Accesorios, 5=Desconocido, 6=Sin Falla, 7=Otros, 8=No Registra'
     },
     mphardware: {
-      type: DataTypes.TEXT,
+      type: DataTypes.BOOLEAN,
       allowNull: true,
-      comment: 'Mantenimiento preventivo hardware'
+      comment: 'Mantenimiento preventivo hardware realizado'
     },
     mpsoftware: {
-      type: DataTypes.TEXT,
+      type: DataTypes.BOOLEAN,
       allowNull: true,
-      comment: 'Mantenimiento preventivo software'
+      comment: 'Mantenimiento preventivo software realizado'
     },
     rutinah: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(255),
       allowNull: true,
       comment: 'Rutinas de hardware'
     },
     rutinas: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING(255),
       allowNull: true,
       comment: 'Rutinas de software'
     },
@@ -81,27 +83,27 @@ module.exports = (sequelize) => {
       comment: 'Tiempo en minutos fuera de servicio'
     },
     dano: {
-      type: DataTypes.TEXT,
+      type: DataTypes.BOOLEAN,
       allowNull: true,
-      comment: 'Descripción del daño'
+      comment: 'Indica si hay daño'
     },
     entega: {
-      type: DataTypes.TEXT,
+      type: DataTypes.BOOLEAN,
       allowNull: true,
-      comment: 'Detalles de entrega'
+      comment: 'Indica si se realizó entrega'
     },
     rutahardware: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.TEXT,
       allowNull: true,
       comment: 'Ruta del PDF de mantenimiento hardware'
     },
     rutasoftware: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.TEXT,
       allowNull: true,
       comment: 'Ruta del PDF de mantenimiento software'
     },
     rutaentrega: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.TEXT,
       allowNull: true,
       comment: 'Ruta del PDF de entrega'
     },

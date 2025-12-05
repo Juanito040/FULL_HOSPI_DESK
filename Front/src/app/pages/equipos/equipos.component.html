@@ -5,13 +5,9 @@
       <p class="subtitle">Administra todos los equipos de sistemas del hospital</p>
     </div>
     <div class="header-actions">
-      <button class="btn btn-secondary" (click)="loadEquipos()" title="Refrescar tabla" [disabled]="isLoading">
-        <span></span>
-        <span>Recargar</span>
-      </button>
       <button class="btn btn-primary" (click)="openCreateModal()">
         <span></span>
-        <span>Nuevo Equipo</span>
+        <span>+ Nuevo Equipo</span>
       </button>
     </div>
   </div>
@@ -23,21 +19,27 @@
       [class.active]="selectedView === 'all'"
       (click)="changeView('all')"
       [disabled]="isLoading">
-       Todos los Equipos
+      <i class="fas fa-list"></i>
+      <span>Todos los Equipos</span>
+      <span class="badge-count" *ngIf="totalEquipos > 0">{{ totalEquipos }}</span>
     </button>
     <button
       class="view-filter-btn"
       [class.active]="selectedView === 'bodega'"
       (click)="changeView('bodega')"
       [disabled]="isLoading">
-       En Bodega
+      <i class="fas fa-warehouse"></i>
+      <span>En Bodega</span>
+      <span class="badge-count" *ngIf="totalBodega > 0">{{ totalBodega }}</span>
     </button>
     <button
       class="view-filter-btn"
       [class.active]="selectedView === 'baja'"
       (click)="changeView('baja')"
       [disabled]="isLoading">
-       Dados de Baja
+      <i class="fas fa-ban"></i>
+      <span>Dados de Baja</span>
+      <span class="badge-count" *ngIf="totalBaja > 0">{{ totalBaja }}</span>
     </button>
   </div>
 
@@ -47,6 +49,8 @@
       <span class="search-icon"><i class="fas fa-search"></i></span>
       <input
         type="text"
+        name="equipment-search"
+        autocomplete="off"
         placeholder="Buscar por nombre, marca, modelo o ubicación..."
         (input)="onSearch($event)"
         [disabled]="isLoading"
@@ -110,9 +114,22 @@
               </td>
               <td>
                 <div class="action-buttons">
+                  <!-- Botón Ver - Siempre visible -->
                   <button class="btn btn-icon" title="Ver detalles" (click)="openDetailModal(equipo)"><i class="fas fa-eye"></i></button>
-                  <button class="btn btn-icon" title="Editar" (click)="openEditModal(equipo)"><i class="fas fa-edit"></i></button>
-                  <button class="btn btn-icon" title="Eliminar" (click)="confirmDelete(equipo)"><i class="fas fa-trash"></i></button>
+
+                  <!-- Botones para vista de Bodega -->
+                  @if (selectedView === 'bodega') {
+                    <button class="btn btn-icon btn-success" title="Reactivar equipo y asignar ubicación" (click)="reactivarEquipo(equipo)"><i class="fas fa-power-off"></i></button>
+                    <button class="btn btn-icon btn-danger" title="Eliminar" (click)="confirmDelete(equipo)"><i class="fas fa-trash"></i></button>
+                  }
+
+                  <!-- Botones para vista Normal (Todos los equipos) -->
+                  @if (selectedView === 'all') {
+                    <button class="btn btn-icon" title="Editar" (click)="openEditModal(equipo)"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-icon" title="Eliminar" (click)="confirmDelete(equipo)"><i class="fas fa-trash"></i></button>
+                  }
+
+                  <!-- Vista de Dados de Baja: solo Ver (sin otros botones) -->
                 </div>
               </td>
             </tr>
@@ -145,26 +162,16 @@
   (saved)="onEquipoSaved()"
 ></app-equipo-modal>
 
-<!-- Modal de Opciones de Eliminación -->
-<app-delete-options-dialog
+<!-- Modal de Confirmación de Eliminación -->
+<app-delete-confirmation-dialog
   [isOpen]="isDeleteOptionsDialogOpen"
-  [equipoNombre]="equipoToDeleteWithOptions?.nombre_equipo || ''"
-  (onClose)="closeDeleteOptionsDialog()"
-  (onConfirm)="handleDeleteOptionsConfirm($event)"
-></app-delete-options-dialog>
-
-<!-- Modal de Confirmación de Eliminación (deprecated) -->
-<app-confirm-dialog
-  [isOpen]="isConfirmDialogOpen"
-  [title]="'Eliminar Equipo'"
-  [message]="'¿Estás seguro de que deseas eliminar el equipo &quot;' + (equipoToDelete?.nombre_equipo || '') + '&quot;? Esta acción no se puede deshacer.'"
-  [confirmText]="'Eliminar'"
-  [cancelText]="'Cancelar'"
-  [type]="'danger'"
-  [icon]="'fas fa-trash'"
-  (confirmed)="deleteEquipo()"
-  (cancelled)="closeConfirmDialog()">
-</app-confirm-dialog>
+  [itemName]="equipoToDeleteWithOptions?.nombre_equipo || ''"
+  [itemType]="'equipo'"
+  [isAdmin]="isAdmin"
+  [hideBodegaOption]="selectedView === 'bodega'"
+  (closed)="closeDeleteOptionsDialog()"
+  (confirmed)="handleDeleteOptionsConfirm($event)"
+></app-delete-confirmation-dialog>
 
 <!-- Modal de Vista Detallada -->
 <app-equipo-detail-modal
@@ -173,3 +180,12 @@
   (closed)="closeDetailModal()"
   (editRequested)="onEditFromDetail($event)"
 ></app-equipo-detail-modal>
+
+<!-- Modal de Reactivar Equipo -->
+<app-reactivar-equipo-modal
+  [isOpen]="isReactivarModalOpen"
+  [equipoNombre]="equipoToReactivar?.nombre_equipo || ''"
+  [ubicacionAnterior]="equipoToReactivar?.ubicacion_anterior || ''"
+  (closed)="closeReactivarModal()"
+  (confirmed)="handleReactivarConfirm($event)"
+></app-reactivar-equipo-modal>

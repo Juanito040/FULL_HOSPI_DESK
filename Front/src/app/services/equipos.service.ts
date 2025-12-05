@@ -13,6 +13,7 @@ export interface Equipo {
   codigo?: string;
   ubicacion?: string;
   ubicacion_especifica?: string;
+  ubicacion_anterior?: string;  // Ubicación antes de ir a bodega
   activo?: number; // 0 = inactivo, 1 = activo (TINYINT)
   ano_ingreso?: number;
   dias_mantenimiento?: number;
@@ -85,7 +86,7 @@ export class EquiposService {
    * Actualizar un equipo existente
    */
   updateEquipo(id: number, equipo: Partial<Equipo>): Observable<EquipoResponse> {
-    return this.http.put<EquipoResponse>(`${this.apiUrl}/${id}`, equipo);
+    return this.http.patch<EquipoResponse>(`${this.apiUrl}/${id}`, equipo);
   }
 
   /**
@@ -123,19 +124,17 @@ export class EquiposService {
   }
 
   /**
-   * Eliminar un equipo (soft delete - inactivar)
-   * @deprecated Usar enviarABodega o darDeBaja según el caso
+   * Reactivar un equipo que está en bodega o inactivo
    */
-  deleteEquipo(id: number): Observable<EquipoResponse> {
-    return this.http.delete<EquipoResponse>(`${this.apiUrl}/${id}`);
+  reactivarEquipo(id: number): Observable<EquipoResponse> {
+    return this.http.patch<EquipoResponse>(`${this.apiUrl}/${id}/reactivar`, {});
   }
 
   /**
-   * Eliminar un equipo permanentemente (hard delete)
-   * @deprecated Usar darDeBaja en su lugar
+   * Cambiar el estado activo/inactivo de un equipo
    */
-  hardDeleteEquipo(id: number, password: string): Observable<EquipoResponse> {
-    return this.http.post<EquipoResponse>(`${this.apiUrl}/${id}/hard-delete`, { password });
+  cambiarEstadoActivo(id: number, activo: boolean): Observable<EquipoResponse> {
+    return this.http.patch<EquipoResponse>(`${this.apiUrl}/${id}`, { activo: activo ? 1 : 0 });
   }
 
   /**
@@ -146,3 +145,4 @@ export class EquiposService {
     return this.http.get<EquipoResponse>(this.apiUrl, { params });
   }
 }
+
