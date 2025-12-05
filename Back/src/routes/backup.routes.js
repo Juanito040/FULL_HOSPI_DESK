@@ -18,8 +18,8 @@ router.get('/backup/pendientes/:id', backupController.getPendingBackupsDetail);
 router.get('/backup/usuario/:usuarioId', backupController.getByUsuario);
 
 // GET - Rutas genéricas DESPUÉS
-router.get('/backup/:id', backupController.getById);
-router.get('/backup', backupController.getAll);
+router.get('/backups/:id', backupController.getById);
+router.get('/backups', backupController.getAll);
 
 // POST - Crear un nuevo backup
 router.post('/backup', backupController.create);

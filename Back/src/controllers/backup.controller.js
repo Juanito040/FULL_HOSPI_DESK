@@ -19,7 +19,7 @@ class BackupController {
   }
 
   /**
-   * GET /api/backup/:id
+   * GET /api/backups/:id
    * Obtener un backup por ID
    */
   async getById(req, res, next) {
@@ -61,7 +61,7 @@ class BackupController {
   }
 
   /**
-   * PUT /api/backup/:id
+   * PUT /api/backups/:id
    * Actualizar un backup
    */
   async update(req, res, next) {
@@ -86,7 +86,7 @@ class BackupController {
   }
 
   /**
-   * DELETE /api/backup/:id
+   * DELETE /api/backups/:id
    * Eliminar un backup
    */
   async delete(req, res, next) {

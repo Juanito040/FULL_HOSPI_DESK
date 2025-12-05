@@ -1,0 +1,66 @@
+<div class="container py-4" *ngIf="!loading && backup">
+
+  <!-- PANEL RESUMEN PREMIUM -->
+  <h4 class="fw-bold mb-3 text-primary resumen-title">
+    <i class="fa-solid fa-clipboard-list me-2"></i> Resumen
+  </h4>
+
+  <div class="summary-card shadow-sm mb-4">
+    <div class="row text-center">
+
+      <div class="col-md-4">
+        <h6 class="text-muted">ID</h6>
+        <p class="summary-value">{{ backup.id_reporte_backup }}</p>
+      </div>
+
+      <div class="col-md-4">
+        <h6 class="text-muted">Fecha</h6>
+        <p class="summary-value">{{ backup.fecha_backup | date:'yyyy-MM-dd' }}</p>
+      </div>
+
+      <div class="col-md-4">
+        <h6 class="text-muted">Recurso</h6>
+        <p class="summary-value">{{ backup.tipo_recurso }}</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TARJETA PRINCIPAL -->
+  <div class="card shadow-lg border-0 rounded-4 p-4 animate">
+
+    <div class="d-flex align-items-center mb-4">
+      <div class="icon-circle bg-primary text-white me-3">
+        <i class="fa-solid fa-database fa-xl"></i>
+      </div>
+      <h3 class="fw-bold mb-0">Detalles del Backup</h3>
+    </div>
+
+    <!-- GRID PREMIUM DE 3 COLUMNAS -->
+    <div class="grid-3col">
+      <div class="item"><label>ID</label><span>{{ backup.id_reporte_backup }}</span></div>
+      <div class="item"><label>Recurso</label><span>{{ backup.tipo_recurso }}</span></div>
+      <div class="item"><label>Nombre del Recurso</label><span>{{ backup.nombre_recurso }}</span></div>
+      <div class="item"><label>Fecha</label><span>{{ backup.fecha_backup | date:'yyyy-MM-dd' }}</span></div>
+      <div class="item"><label>Periodicidad</label><span>{{ backup.periodicidad }}</span></div>
+      <div class="item"><label>Tamaño</label><span>{{ backup.tamano }}</span></div>
+      <div class="item"><label>Destino</label><span>{{ backup.destino }}</span></div>
+      <div class="item"><label>Solicitante</label><span>{{ backup.autor_solicita }}</span></div>
+      <div class="item"><label>Realizado por</label><span>{{ backup.autorRealizado?.Nombre }} {{ backup.autorRealizado?.Apellido }}</span></div>
+    </div>
+
+    <!-- BOTÓN MÁS ABAJO Y CENTRADO -->
+    <div class="text-center mt-5">
+      <button class="btn btn-volver px-5" (click)="volver()">
+        <i class="fa-solid fa-arrow-left me-2"></i> Volver
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOADING -->
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border text-primary"></div>
+  <p class="mt-2 text-muted">Cargando información...</p>
+</div>

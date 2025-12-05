@@ -8,8 +8,10 @@
 // ========================================
 
 export interface CatalogoItem {
-  value: number;
-  label: string;
+  id?: number;
+  value?: number;
+  nombre?: string;
+  label?: string;
 }
 
 // ========================================
@@ -158,4 +160,68 @@ export function getTipoFallaClass(value: number | null | undefined): string {
     default:
       return 'badge-secondary';
   }
+}
+
+// ========================================
+// CONSTANTES DE BACKUPS
+// ========================================
+
+export const TIPOS_RECURSO_BACKUP = [
+  'Servidor virtual',
+  'Servidor fisico',
+  'Base de datos',
+  'Computador',
+  'Correo',
+  'Switch',
+  'TRD',
+  'Otro'
+] as const;
+
+export const MEDIOS_BACKUP = [
+  'Cinta',
+  'Disco',
+  'Servidor'
+] as const;
+
+export const PERIODICIDADES_BACKUP = [
+  'Diario',
+  'Semanal',
+  'Mensual'
+] as const;
+
+export const CASOS_MS = [
+  'Si',
+  'No'
+] as const;
+
+/**
+ * Obtiene todos los tipos de recurso como array
+ * @returns Array de tipos de recurso
+ */
+export function getAllTiposRecurso(): string[] {
+  return [...TIPOS_RECURSO_BACKUP];
+}
+
+/**
+ * Obtiene todos los medios de backup como array
+ * @returns Array de medios
+ */
+export function getAllMediosBackup(): string[] {
+  return [...MEDIOS_BACKUP];
+}
+
+/**
+ * Obtiene todas las periodicidades como array
+ * @returns Array de periodicidades
+ */
+export function getAllPeriodicidades(): string[] {
+  return [...PERIODICIDADES_BACKUP];
+}
+
+/**
+ * Obtiene las opciones de caso MS
+ * @returns Array de opciones Si/No
+ */
+export function getCasosMS(): string[] {
+  return [...CASOS_MS];
 }

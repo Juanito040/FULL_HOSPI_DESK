@@ -4,13 +4,44 @@
       <h1>Indicadores y Estadísticas</h1>
       <p class="subtitle">Análisis de rendimiento y métricas del sistema</p>
     </div>
-    <div class="period-selector">
-      <select class="filter-select" [disabled]="isLoading">
+    <div class="filters-container">
+      <!-- Selector de período rápido -->
+      <select 
+        class="filter-select" 
+        [(ngModel)]="periodoSeleccionado"
+        (change)="onPeriodoChange(periodoSeleccionado)"
+        [disabled]="isLoading">
         <option value="mes">Último mes</option>
         <option value="trimestre">Último trimestre</option>
         <option value="semestre">Último semestre</option>
         <option value="anio">Último año</option>
       </select>
+      
+      <!-- Filtros de fecha personalizados -->
+      <div class="date-filters">
+        <input 
+          type="date" 
+          class="date-input"
+          [(ngModel)]="fechaInicio"
+          [disabled]="isLoading"
+          placeholder="Fecha inicio"
+        />
+        <span class="date-separator">-</span>
+        <input 
+          type="date" 
+          class="date-input"
+          [(ngModel)]="fechaFin"
+          [disabled]="isLoading"
+          placeholder="Fecha fin"
+        />
+        <button 
+          class="btn btn-primary btn-sm"
+          (click)="aplicarFiltroFechas()"
+          [disabled]="isLoading || !fechaInicio || !fechaFin">
+          <i class="fas fa-filter"></i>
+          Filtrar
+        </button>
+      </div>
     </div>
   </div>
 
@@ -141,6 +172,30 @@
       </div>
     </div>
   </div>
+
+    <!-- Resumen de Inventario por Tipo -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Resumen de Inventario por Tipo</h2>
+        <p class="card-subtitle">Cantidad de equipos agrupados por tipo</p>
+      </div>
+      <div class="inventory-summary">
+        @for (item of inventarioResumen; track item.tipo) {
+          <div class="inventory-item">
+            <div class="inventory-label">
+              <i class="fas fa-laptop-medical"></i>
+              <span>{{ item.tipo }}</span>
+            </div>
+            <div class="inventory-stats">
+              <span class="stat-badge total">{{ item.total }}</span>
+              <span class="stat-badge active">{{ item.activos }} activos</span>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-message">No hay datos de inventario disponibles</div>
+        }
+      </div>
+    </div>
 
     <!-- Botones de acción -->
     <div class="actions-footer">

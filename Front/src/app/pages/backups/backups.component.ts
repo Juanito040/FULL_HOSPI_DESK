@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BackupsService, Backup, BackupPendiente } from '../../services/backups.service';
+import { BackupService, Backup, BackupPendiente } from '../../services/backups.service';
 import { UsuariosService } from '../../services/usuarios.service';
 
 @Component({
   selector: 'app-backups',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: 'backups.component.html',
-  styleUrls: ['backups.component.css']
+  templateUrl: './backups.component.html',
+  styleUrls: ['./backups.component.css']
 })
 export class BackupsComponent implements OnInit {
   backups: Backup[] = [];
@@ -30,7 +30,7 @@ export class BackupsComponent implements OnInit {
   periodicidades = ['Diario', 'Semanal', 'Mensual'];
 
   constructor(
-    private backupsService: BackupsService,
+    private backupsService: BackupService,
     private usuariosService: UsuariosService
   ) { }
 
@@ -43,13 +43,13 @@ export class BackupsComponent implements OnInit {
   cargarBackups() {
     this.loading = true;
     this.backupsService.getBackups().subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success && Array.isArray(response.data)) {
           this.backups = response.data;
         }
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error al cargar backups:', error);
         this.loading = false;
       }
@@ -58,12 +58,12 @@ export class BackupsComponent implements OnInit {
 
   cargarBackupsPendientes() {
     this.backupsService.getBackupsPendientes().subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success && Array.isArray(response.data)) {
           this.backupsPendientes = response.data;
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error al cargar backups pendientes:', error);
       }
     });
@@ -108,7 +108,7 @@ export class BackupsComponent implements OnInit {
           this.cargarBackups();
           this.closeModal();
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error al actualizar backup:', error);
           alert('Error al actualizar el backup');
         }
@@ -119,7 +119,7 @@ export class BackupsComponent implements OnInit {
           this.cargarBackups();
           this.closeModal();
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error al crear backup:', error);
           alert('Error al crear el backup');
         }
@@ -135,7 +135,7 @@ export class BackupsComponent implements OnInit {
       next: () => {
         this.cargarBackups();
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error al eliminar backup:', error);
         alert('Error al eliminar el backup');
       }
@@ -144,12 +144,12 @@ export class BackupsComponent implements OnInit {
 
   verDetallesPendientes(id: number) {
     this.backupsService.getBackupsPendientesDetalle(id).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success) {
           alert(`Recurso: ${response.data.recurso}\nPeriodicidad: ${response.data.periodicidad}\nÚltimo backup: ${response.data.ultimo_backup}\nFaltantes: ${response.data.faltantes.join(', ')}`);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error:', error);
       }
     });
@@ -189,7 +189,7 @@ export class BackupsComponent implements OnInit {
           this.cargarBackups();
           alert('Backup actualizado correctamente');
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error:', error);
           alert('Error al actualizar el backup');
         }

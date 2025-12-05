@@ -14,7 +14,8 @@ const getAllSysEquipos = async (req, res, next) => {
             id_hospital_fk,
             search,
             sortBy = 'createdAt',
-            order = 'DESC'
+            order = 'DESC',
+            includeAll = false  // Nuevo parámetro para incluir todos los equipos
         } = req.query;
 
         // Construir filtros
@@ -48,11 +49,13 @@ const getAllSysEquipos = async (req, res, next) => {
             ];
         }
 
-        // Excluir equipos en bodega y dados de baja de la lista principal
-        where[Op.and] = [
-            { [Op.or]: [{ ubicacion: { [Op.ne]: 'Bodega' } }, { ubicacion: null }] },
-            { [Op.or]: [{ estado_baja: { [Op.ne]: 1 } }, { estado_baja: null }, { estado_baja: 0 }] }
-        ];
+        // Excluir equipos en bodega y dados de baja SOLO si includeAll es false
+        if (includeAll !== 'true' && includeAll !== true) {
+            where[Op.and] = [
+                { [Op.or]: [{ ubicacion: { [Op.ne]: 'Bodega' } }, { ubicacion: null }] },
+                { [Op.or]: [{ estado_baja: { [Op.ne]: 1 } }, { estado_baja: null }, { estado_baja: 0 }] }
+            ];
+        }
 
         console.log('🔍 Filtros aplicados en getAllSysEquipos:', JSON.stringify(where, null, 2));
 

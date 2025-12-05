@@ -258,6 +258,6 @@ El backend debe exponer los siguientes endpoints:
 
 Para reportar problemas o solicitar nuevas características, contacta al equipo de desarrollo.
 
-## Licencia
+##  Licencia
 
-Este proyecto es propiedad del Hospital San Rafael.
+JUAN MIGUEL RAMIREZ MANCILLA

@@ -1,0 +1,178 @@
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Gestión de Backups</h1>
+      <p class="subtitle">Administra los respaldos y recuperación de datos del sistema</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" [routerLink]="['/newbackup']">
+        <span>+ Nuevo Backup</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros de vista -->
+  <div class="view-filters">
+    <button
+      class="view-filter-btn"
+      [class.active]="!showPendientes"
+      (click)="showPendientes = false"
+      [disabled]="loading">
+      <i class="fas fa-list"></i>
+      <span>Todos los Backups</span>
+      <span class="badge-count" *ngIf="backups.length > 0">{{ backups.length }}</span>
+    </button>
+    <button
+      class="view-filter-btn"
+      [class.active]="showPendientes"
+      (click)="togglePendientes()"
+      [disabled]="loading">
+      <i class="fas fa-bell"></i>
+      <span>Backups Pendientes</span>
+      <span class="badge-count" *ngIf="pendientes.length > 0">{{ pendientes.length }}</span>
+    </button>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="toolbar" *ngIf="!showPendientes">
+    <div class="search-box">
+      <span class="search-icon"><i class="fas fa-search"></i></span>
+      <input
+        type="text"
+        name="backup-search"
+        autocomplete="off"
+        placeholder="Buscar por recurso, tipo, periodicidad o destino..."
+        [(ngModel)]="filterText"
+        (input)="applyFilter()"
+        [disabled]="loading"
+      />
+    </div>
+  </div>
+
+  <!-- Mensaje de carga -->
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner">⏳</div>
+      <p>Cargando backups...</p>
+    </div>
+  }
+
+  <!-- Lista de pendientes -->
+  @if (!loading && showPendientes) {
+    @if (pendientes.length > 0) {
+      <div class="pendientes-grid">
+        @for (pendiente of pendientes; track pendiente.id_reporte_backup) {
+          <div class="pendiente-card">
+            <div class="pendiente-header">
+              <div class="pendiente-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <h3>{{ pendiente.nombre_recurso }}</h3>
+            </div>
+            <div class="pendiente-details">
+              <div class="detail-row">
+                <span class="detail-label">Periodicidad:</span>
+                <span class="detail-value">{{ pendiente.periodicidad }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Destino:</span>
+                <span class="detail-value">{{ pendiente.destino }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Último backup:</span>
+                <span class="detail-value">{{ pendiente.ultimo_backup | date:'dd/MM/yyyy' }}</span>
+              </div>
+              @if (pendiente.faltantes && pendiente.faltantes.length > 0) {
+                <div class="faltantes-section">
+                  <span class="faltantes-label">Fechas faltantes:</span>
+                  <div class="faltantes-list">
+                    @for (faltante of pendiente.faltantes; track faltante) {
+                      <span class="faltante-badge">{{ faltante }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fas fa-check-circle"></i></div>
+        <h3>¡Todo al día!</h3>
+        <p>No hay backups pendientes en este momento</p>
+      </div>
+    }
+  }
+
+  <!-- Tabla de backups -->
+  @if (!loading && !showPendientes) {
+    @if (filteredBackups.length > 0) {
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Recurso</th>
+              <th>Nombre</th>
+              <th>Fecha</th>
+              <th>Periodicidad</th>
+              <th>Destino</th>
+              <th>Medio</th>
+              <th>Tamaño</th>
+              <th>Realizado por</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (backup of filteredBackups; track backup.id_reporte_backup) {
+              <tr>
+                <td><span class="id-badge">{{ backup.id_reporte_backup }}</span></td>
+                <td><span class="tipo-badge">{{ backup.tipo_recurso }}</span></td>
+                <td class="name-cell">{{ backup.nombre_recurso }}</td>
+                <td>{{ backup.fecha_backup | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <span class="periodicidad-badge" [attr.data-tipo]="backup.periodicidad">
+                    {{ backup.periodicidad }}
+                  </span>
+                </td>
+                <td>{{ backup.destino || 'N/A' }}</td>
+                <td>
+                  <span class="medio-badge">
+                    @if (backup.medio === 'Cinta') { 📼 }
+                    @if (backup.medio === 'Disco') { 💿 }
+                    @if (backup.medio === 'Servidor') { 🖥️ }
+                    {{ backup.medio }}
+                  </span>
+                </td>
+                <td>{{ backup.tamano || 'N/A' }}</td>
+                <td>{{ backup.autorRealizado?.Nombre || 'N/A' }} {{ backup.autorRealizado?.Apellido || '' }}</td>
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      class="btn-icon btn-view"
+                      [routerLink]="['/formatobackup', backup.id_reporte_backup]"
+                      title="Ver detalle">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="fas fa-database"></i></div>
+        <h3>No se encontraron backups</h3>
+        <p>{{ filterText ? 'Intenta con otros términos de búsqueda' : 'Comienza creando tu primer backup' }}</p>
+        @if (!filterText) {
+          <button class="btn btn-primary" [routerLink]="['/newbackup']">
+            <span>+ Crear Primer Backup</span>
+          </button>
+        }
+      </div>
+    }
+  }
+</div>

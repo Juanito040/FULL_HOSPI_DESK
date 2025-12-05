@@ -6,6 +6,7 @@ import { HojasVidaService, HojaVida } from '../../services/hojas-vida.service';
 import { UsuariosService } from '../../services/usuarios.service';
 import { ActividadService } from '../../services/actividad.service';
 import { NotificationService } from '../../services/notification.service';
+import { SysCatalogosService } from '../../services/sys-catalogos.service';
 import { forkJoin } from 'rxjs';
 
 interface LookupItem {
@@ -48,7 +49,8 @@ export class EquipoModalComponent implements OnInit, OnChanges {
     private hojasVidaService: HojasVidaService,
     private usuariosService: UsuariosService,
     private actividadService: ActividadService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private catalogosService: SysCatalogosService
   ) {}
 
   ngOnInit() {
@@ -78,30 +80,58 @@ export class EquipoModalComponent implements OnInit, OnChanges {
 
   /**
    * Cargar datos de lookup para los dropdowns
-   * TODO: Reemplazar con llamadas a API reales cuando estén disponibles
    */
   loadLookupData() {
-    // Datos temporales - reemplazar con llamadas a servicios
-    this.hospitales = [
-      { id: 1, nombre: 'Hospital San Rafael' },
-      { id: 2, nombre: 'Hospital Central' }
-    ];
+    // Cargar hospitales desde la API
+    this.catalogosService.getHospitales().subscribe({
+      next: (data) => {
+        this.hospitales = data as LookupItem[];
+      },
+      error: (err) => {
+        console.error('Error al cargar hospitales:', err);
+        // Fallback a datos locales en caso de error
+        this.hospitales = [
+          { id: 1, nombre: 'Hospital San Rafael' },
+          { id: 2, nombre: 'Hospital Central' }
+        ];
+      }
+    });
 
-    this.servicios = [
-      { id: 1, nombre: 'Sistemas e Informática' },
-      { id: 2, nombre: 'Mantenimiento' },
-      { id: 3, nombre: 'Urgencias' },
-      { id: 4, nombre: 'Consulta Externa' }
-    ];
+    // Cargar servicios desde la API
+    this.catalogosService.getServicios().subscribe({
+      next: (data) => {
+        this.servicios = data as LookupItem[];
+      },
+      error: (err) => {
+        console.error('Error al cargar servicios:', err);
+        // Fallback a datos locales en caso de error
+        this.servicios = [
+          { id: 1, nombre: 'Sistemas e Informática' },
+          { id: 2, nombre: 'Mantenimiento' },
+          { id: 3, nombre: 'Urgencias' },
+          { id: 4, nombre: 'Consulta Externa' }
+        ];
+      }
+    });
 
-    this.tiposEquipo = [
-      { id: 1, nombre: 'Computador de Escritorio' },
-      { id: 2, nombre: 'Portátil' },
-      { id: 3, nombre: 'Servidor' },
-      { id: 4, nombre: 'Switch' },
-      { id: 5, nombre: 'Router' },
-      { id: 6, nombre: 'Impresora' }
-    ];
+    // Cargar tipos de equipo desde la API
+    this.catalogosService.getTiposEquipo().subscribe({
+      next: (data) => {
+        this.tiposEquipo = data as LookupItem[];
+      },
+      error: (err) => {
+        console.error('Error al cargar tipos de equipo:', err);
+        // Fallback a datos locales en caso de error
+        this.tiposEquipo = [
+          { id: 1, nombre: 'Computador de Escritorio' },
+          { id: 2, nombre: 'Portátil' },
+          { id: 3, nombre: 'Servidor' },
+          { id: 4, nombre: 'Switch' },
+          { id: 5, nombre: 'Router' },
+          { id: 6, nombre: 'Impresora' }
+        ];
+      }
+    });
 
     // Cargar usuarios reales desde la API
     this.usuariosService.getUsuariosActivos().subscribe({

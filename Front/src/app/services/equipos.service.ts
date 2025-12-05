@@ -26,6 +26,7 @@ export interface Equipo {
   id_hospital_fk?: number;
   id_servicio_fk?: number;
   id_tipo_equipo_fk?: number;
+  tipo_equipo?: string;  // ✅ Agregado para inventario
   id_usuario_fk?: number;
   createdAt?: string;
   updatedAt?: string;
@@ -54,6 +55,7 @@ export class EquiposService {
     id_tipo_equipo_fk?: number;
     id_hospital_fk?: number;
     search?: string;
+    includeAll?: boolean;  // Incluir equipos en bodega e inactivos
   }): Observable<EquipoResponse> {
     let params = new HttpParams();
 
@@ -63,6 +65,7 @@ export class EquiposService {
       if (filters.id_tipo_equipo_fk) params = params.set('id_tipo_equipo_fk', filters.id_tipo_equipo_fk.toString());
       if (filters.id_hospital_fk) params = params.set('id_hospital_fk', filters.id_hospital_fk.toString());
       if (filters.search) params = params.set('search', filters.search);
+      if (filters.includeAll) params = params.set('includeAll', 'true');
     }
 
     return this.http.get<EquipoResponse>(this.apiUrl, { params });

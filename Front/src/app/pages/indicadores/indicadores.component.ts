@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IndicadoresService } from '../../services/indicadores.service';
 import { EquiposService } from '../../services/equipos.service';
 
@@ -23,13 +24,18 @@ interface MetricaCard {
 @Component({
   selector: 'app-indicadores',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './indicadores.component.html',
   styleUrls: ['./indicadores.component.css']
 })
 export class IndicadoresComponent implements OnInit {
   // Métricas principales
   metricas: MetricaCard[] = [];
+
+  // Filtros de fecha
+  fechaInicio: string = '';
+  fechaFin: string = '';
+  periodoSeleccionado: string = 'mes';
 
   // Estadísticas por tipo de mantenimiento
   estadisticasTipo: Estadistica[] = [];
@@ -39,6 +45,9 @@ export class IndicadoresComponent implements OnInit {
 
   // Equipos por estado
   equiposPorEstado: Estadistica[] = [];
+
+  // Resumen de inventario
+  inventarioResumen: any[] = [];
 
   // Tiempo fuera de servicio
   tiempoFueraServicio: any[] = [];
@@ -76,7 +85,67 @@ export class IndicadoresComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.setDefaultDateRange();
     this.loadDashboard();
+  }
+
+  /**
+   * Establecer rango de fechas por defecto (último mes)
+   */
+  setDefaultDateRange() {
+    const hoy = new Date();
+    const hace30Dias = new Date();
+    hace30Dias.setDate(hoy.getDate() - 30);
+
+    this.fechaFin = this.formatDate(hoy);
+    this.fechaInicio = this.formatDate(hace30Dias);
+  }
+
+  /**
+   * Formatear fecha a YYYY-MM-DD
+   */
+  formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Cambiar período seleccionado
+   */
+  onPeriodoChange(periodo: string) {
+    this.periodoSeleccionado = periodo;
+    const hoy = new Date();
+    const fechaInicio = new Date();
+
+    switch (periodo) {
+      case 'mes':
+        fechaInicio.setMonth(hoy.getMonth() - 1);
+        break;
+      case 'trimestre':
+        fechaInicio.setMonth(hoy.getMonth() - 3);
+        break;
+      case 'semestre':
+        fechaInicio.setMonth(hoy.getMonth() - 6);
+        break;
+      case 'anio':
+        fechaInicio.setFullYear(hoy.getFullYear() - 1);
+        break;
+    }
+
+    this.fechaInicio = this.formatDate(fechaInicio);
+    this.fechaFin = this.formatDate(hoy);
+    this.loadDashboard();
+  }
+
+  /**
+   * Aplicar filtro de fechas personalizado
+   */
+  aplicarFiltroFechas() {
+    if (this.fechaInicio && this.fechaFin) {
+      this.loadDashboard();
+    }
   }
 
   /**
@@ -86,11 +155,12 @@ export class IndicadoresComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.indicadoresService.getDashboard().subscribe({
+    this.indicadoresService.getDashboard(this.fechaInicio, this.fechaFin).subscribe({
       next: (response) => {
         if (response.success) {
           this.processDashboardData(response.data);
           this.loadEquiposStats();
+          this.loadInventarioResumen();
         } else {
           this.error = 'Error al cargar los indicadores';
         }
@@ -226,6 +296,41 @@ export class IndicadoresComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar equipos:', err);
+      }
+    });
+  }
+
+  /**
+   * Cargar resumen de inventario por tipo
+   */
+  loadInventarioResumen() {
+    // Incluir TODOS los equipos (incluso bodega e inactivos) para el resumen completo
+    this.equiposService.getEquipos({ includeAll: true }).subscribe({
+      next: (response) => {
+        if (response.success && Array.isArray(response.data)) {
+          const equipos = response.data;
+          const gruposPorTipo = new Map<string, any[]>();
+          
+          // Agrupar por tipo de equipo real (de la tabla tipoequipo)
+          equipos.forEach(equipo => {
+            // Usar el nombre del tipo de equipo de la relación, o 'Sin especificar' si no existe
+            const tipo = (equipo as any).tipoEquipo?.nombres || 'Sin especificar';
+            if (!gruposPorTipo.has(tipo)) {
+              gruposPorTipo.set(tipo, []);
+            }
+            gruposPorTipo.get(tipo)!.push(equipo);
+          });
+
+          // Calcular estadísticas
+          this.inventarioResumen = Array.from(gruposPorTipo.entries()).map(([tipo, equipos]) => ({
+            tipo,
+            total: equipos.length,
+            activos: equipos.filter(e => Number(e.activo) === 1).length
+          })).sort((a, b) => b.total - a.total).slice(0, 10); // Top 10
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar inventario:', err);
       }
     });
   }

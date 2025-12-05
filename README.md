@@ -238,9 +238,9 @@ npm install
 4. Push a la rama (`git push origin feature/NuevaCaracteristica`)
 5. Abre un Pull Request
 
-## Licencia
+##  Licencia
 
-ISC - Hospital San Rafael
+JUAN MIGUEL RAMIREZ MANCILLA
 
 ## Contacto
 

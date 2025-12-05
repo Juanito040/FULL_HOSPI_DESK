@@ -12,6 +12,7 @@ const reporteRoutes = require('./reporte.routes'); // Rutas de reportes
 const sysMantenimientoRoutes = require('./sysmantenimiento.routes'); // Rutas de mantenimiento de sistemas
 const usuarioRoutes = require('./usuario.routes'); // Rutas de usuarios
 const backupRoutes = require('./backup.routes'); // Rutas de backups/reportes de respaldo
+const catalogosRoutes = require('./catalogos.routes'); // Rutas de catálogos (hospitales, servicios, tipos de equipo)
 
 // Rutas de la API
 router.use('/health', healthRoutes);
@@ -23,6 +24,7 @@ router.use('/reportes', reporteRoutes); // CRUD completo de reportes
 router.use('/sysmantenimiento', sysMantenimientoRoutes); // CRUD completo de mantenimientos de sistemas
 router.use('/usuario', usuarioRoutes); // CRUD de usuarios
 router.use('', backupRoutes); // CRUD de backups/reportes de respaldo
+router.use('/catalogos', catalogosRoutes); // Catálogos (hospitales, servicios, tipos de equipo)
 
 // Ruta raíz de la API
 router.get('/', (req, res) => {
@@ -39,7 +41,8 @@ router.get('/', (req, res) => {
             reportes: '/api/reportes',
             sysmantenimiento: '/api/sysmantenimiento',
             backup: '/api/backup',
-            usuario: '/api/usuario'
+            usuario: '/api/usuario',
+            catalogos: '/api/catalogos'
         }
     });
 });

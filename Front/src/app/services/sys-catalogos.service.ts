@@ -84,6 +84,36 @@ export class SysCatalogosService {
   }
 
   /**
+   * Obtiene el catálogo de hospitales desde el backend
+   */
+  getHospitales(): Observable<CatalogoItem[]> {
+    return this.http.get<CatalogosResponse>(`${environment.apiUrl}/catalogos/hospitales`)
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  /**
+   * Obtiene el catálogo de servicios desde el backend
+   */
+  getServicios(): Observable<CatalogoItem[]> {
+    return this.http.get<CatalogosResponse>(`${environment.apiUrl}/catalogos/servicios`)
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  /**
+   * Obtiene el catálogo de tipos de equipo desde el backend
+   */
+  getTiposEquipo(): Observable<CatalogoItem[]> {
+    return this.http.get<CatalogosResponse>(`${environment.apiUrl}/catalogos/tipos-equipo`)
+      .pipe(
+        map(response => response.data)
+      );
+  }
+
+  /**
    * Obtiene todos los catálogos en una sola llamada
    */
   getAllCatalogos(): Observable<{

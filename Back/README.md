@@ -1,18 +1,18 @@
-# 🏥 Hospital San Rafael - API REST
+#  Hospital San Rafael - API REST
 
 Sistema de Gestión de Equipos Médicos y de Sistemas para el Hospital San Rafael.
 
-## 📋 Características
+##  Características
 
-- ✅ CRUD completo de equipos de sistemas (IT)
-- ✅ Gestión de mantenimientos preventivos y correctivos
-- ✅ Hojas de vida de equipos
-- ✅ Dashboard con estadísticas en tiempo real
-- ✅ Gestión de repuestos
-- ✅ Control de bajas de equipos
-- ✅ Reportes y exportaciones
+-  CRUD completo de equipos de sistemas (IT)
+-  Gestión de mantenimientos preventivos y correctivos
+-  Hojas de vida de equipos
+-  Dashboard con estadísticas en tiempo real
+-  Gestión de repuestos
+-  Control de bajas de equipos
+-  Reportes y exportaciones
 
-## 🚀 Inicio Rápido
+##  Inicio Rápido
 
 ### Requisitos Previos
 
@@ -71,7 +71,7 @@ npm start
 
 El servidor estará disponible en: `http://localhost:3000`
 
-## 📚 API Endpoints
+##  API Endpoints
 
 ### Base
 ```
@@ -110,7 +110,7 @@ PUT    /api/syshojasdevida/:id
 DELETE /api/syshojasdevida/:id
 ```
 
-## 🧪 Testing con Postman
+##  Testing con Postman
 
 1. Importa la colección de Postman:
    - `postman/SysMantenimiento_Collection.postman_collection.json`
@@ -124,7 +124,7 @@ DELETE /api/syshojasdevida/:id
 
 Ver documentación completa: `postman/README_POSTMAN.md`
 
-## 📁 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 HRCATCHFINAL/
@@ -146,7 +146,7 @@ HRCATCHFINAL/
 └── README.md           # Este archivo
 ```
 
-## 🛠️ Tecnologías
+##  Tecnologías
 
 - **Node.js** - Runtime de JavaScript
 - **Express** - Framework web
@@ -156,7 +156,7 @@ HRCATCHFINAL/
 - **Dotenv** - Gestión de variables de entorno
 - **CORS** - Control de acceso entre dominios
 
-## 📊 Base de Datos
+##  Base de Datos
 
 ### Tablas Principales
 
@@ -171,7 +171,7 @@ HRCATCHFINAL/
 
 Ver esquema completo: `database/schema_full_new.sql`
 
-## 🔐 Seguridad
+##  Seguridad
 
 - Variables de entorno para credenciales sensibles
 - JWT para autenticación (si se implementa)
@@ -179,17 +179,8 @@ Ver esquema completo: `database/schema_full_new.sql`
 - CORS configurado
 - Sanitización de inputs
 
-## 🚦 Estados del Proyecto
 
-- ✅ Backend API REST - 100%
-- ✅ Modelos de base de datos - 100%
-- ✅ Testing con Postman - 100%
-- ⬜ Frontend Angular - 0%
-- ⬜ Autenticación JWT - Pendiente
-- ⬜ Subida de archivos - Pendiente
-- ⬜ Generación de PDFs - Pendiente
-
-## 📝 Scripts Disponibles
+##  Scripts Disponibles
 
 ```bash
 # Desarrollo con recarga automática
@@ -202,7 +193,7 @@ npm start
 npm test
 ```
 
-## 🐛 Solución de Problemas
+##  Solución de Problemas
 
 ### Error: Cannot connect to database
 ```bash
@@ -226,22 +217,14 @@ npm install
 PORT=3001
 ```
 
-## 👥 Contribuir
 
-1. Fork el proyecto
-2. Crea tu rama (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
 
-## 📄 Licencia
+##  Licencia
 
-ISC
+JUAN MIGUEL RAMIREZ MANCILLA
 
-## 📞 Contacto
+##  Contacto
 
 Hospital San Rafael - Proyecto Académico
 
 ---
-
-**¡Desarrollado con ❤️ para mejorar la gestión hospitalaria!**
