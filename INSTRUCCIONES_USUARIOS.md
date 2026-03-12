@@ -11,11 +11,6 @@ El script `setup-users.js` crea los siguientes usuarios automáticamente:
 - **Rol:** Administrador
 - **Permisos:** Acceso completo al sistema
 
-###  Ingeniero Biomédico
-- **Usuario:** `jramirez`
-- **Contraseña:** `biomedico123`
-- **Email:** jramirez@hospitalsr.com
-- **Rol:** Ingeniero Biomédico
 
 ###  Técnico de Sistemas
 - **Usuario:** `mlopez`
